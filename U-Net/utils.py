@@ -54,27 +54,44 @@ def get_polygons(annotation):
     return polygons
 
 
-    def categorical2mask(X, labels):
-        Y = np.zeros(X.shape[0:2] + [3], dtype="uint8")
-        for i, key in enumerate(labels):
-            Y[...,0] = np.where(X==i, labels[key][0], Y[...,0])
-            Y[...,1] = np.where(X==i, labels[key][1], Y[...,1])
-            Y[...,2] = np.where(X==i, labels[key][2], Y[...,2])
-        return Y
+def categorical2mask(X, labels):
+    Y = np.zeros(X.shape[0:2] + [3], dtype="uint8")
+    for i, key in enumerate(labels):
+        Y[...,0] = np.where(X==i, labels[key][0], Y[...,0])
+        Y[...,1] = np.where(X==i, labels[key][1], Y[...,1])
+        Y[...,2] = np.where(X==i, labels[key][2], Y[...,2])
+    return Y
 
 
-    def mask2categorical(Mask: tf.Tensor, labels: dict) -> tf.Tensor:
-        """Pass a certain rgb mask (3-channels) to an image of ordinal classes"""
-        assert type(labels) == dict, "labels variable should be a dictionary"
+def mask2categorical(Mask: tf.Tensor, labels: dict) -> tf.Tensor:
+    """Pass a certain rgb mask (3-channels) to an image of ordinal classes"""
+    assert type(labels) == dict, "labels variable should be a dictionary"
 
-        X = Mask
+    X = Mask
 
-        if X.dtype == "float32":
-            X = tf.cast(X*255, dtype="uint8")
+    if X.dtype == "float32":
+        X = tf.cast(X*255, dtype="uint8")
 
-        Y = tf.zeros(X.shape[0:2] , dtype="float32")
-        for i, key in enumerate(labels):
-            Y = tf.where(np.all(X == labels[key], axis=-1), i, Y)
-        Y = tf.cast(Y, dtype="uint8")
-        return Y
+    Y = tf.zeros(X.shape[0:2] , dtype="float32")
+    for i, key in enumerate(labels):
+        Y = tf.where(np.all(X == labels[key], axis=-1), i, Y)
+    Y = tf.cast(Y, dtype="uint8")
+    return Y
+
+def parse_labelfile(path):
+    """Return a dict with the corresponding rgb mask values of the labels
+        Example:
+        >>> labels = parse_labelfile("file/path")
+        >>> print(labels) 
+        >>> {"label1": (r1, g1, b1), "label2": (r2, g2, b2)} 
+    """
+    with open(path, "r") as FILE:
+        lines = FILE.readlines()
+
+    labels = {x.split(":")[0]: x.split(":")[1] for x in lines[1:]}
+
+    for key in labels:
+        labels[key] = np.array(labels[key].split(",")).astype("uint8")
+
+    return labels
 
