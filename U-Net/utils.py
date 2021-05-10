@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 def download_dataset():
     """
@@ -55,6 +56,14 @@ def get_polygons(annotation):
 
 
 def categorical2mask(X, labels):
+    """Convert a mask to a rgb image according to the labels dict
+    Parameters
+    -----------
+    X: tf.tensor or np.ndarray
+        categorical representation of a mask
+    labels: dict
+        dict containing the labelmap that describes the rgb values of each label
+    """
     Y = np.zeros(X.shape[0:2] + [3], dtype="uint8")
     for i, key in enumerate(labels):
         Y[...,0] = np.where(X==i, labels[key][0], Y[...,0])
@@ -94,4 +103,70 @@ def parse_labelfile(path):
         labels[key] = np.array(labels[key].split(",")).astype("uint8")
 
     return labels
+
+def load_tfrecord_dataset(dataset_path, size):
+    """Load and parse a dataset in tfrecord format. 
+    Parameters
+    -----------
+    dataset_path : str 
+        path of the tfrecord dataset
+    size : int
+        size of the images in the dataset
+    
+    Returns
+    ----------
+    tf.data.Dataset
+        Dataset with resized and scaled (min-max) images.
+    """
+    raw_dataset = tf.data.TFRecordDataset([dataset_path])
+    return raw_dataset.map(lambda x: parse_dataset(x, size))
+
+IMAGE_FEATURE_MAP = {
+        'image': tf.io.FixedLenFeature([], tf.string),
+        'mask': tf.io.FixedLenFeature([], tf.string)
+        }
+
+def parse_dataset(tfrecord, size):
+    x = tf.io.parse_single_example(tfrecord, IMAGE_FEATURE_MAP) 
+    X_train = tf.image.decode_jpeg(x['image'], channels=3)
+    Y_train = tf.image.decode_png(x['mask'])
+
+    X_train = tf.image.resize(X_train, (size, size))
+    Y_train = tf.image.resize(Y_train, (size, size))
+    return X_train/255, Y_train
+
+def split_dataset(dataset: tf.data.Dataset, validation_data_fraction: float):
+    """
+    Splits a dataset of type tf.data.Dataset into a training and validation dataset using given ratio. Fractions are
+    rounded up to two decimal places.
+    @param dataset: the input dataset to split.
+    @param validation_data_fraction: the fraction of the validation data as a float between 0 and 1.
+    @return: a tuple of two tf.data.Datasets as (training, validation)
+    """
+
+    validation_data_percent = round(validation_data_fraction * 100)
+    if not (0 <= validation_data_percent <= 100):
+        raise ValueError("validation data fraction must be ∈ [0,1]")
+
+    dataset = dataset.enumerate()
+    train_dataset = dataset.filter(lambda f, data: f % 100 > validation_data_percent)
+    validation_dataset = dataset.filter(lambda f, data: f % 100 <= validation_data_percent)
+
+    # remove enumeration
+    train_dataset = train_dataset.map(lambda f, data: data)
+    validation_dataset = validation_dataset.map(lambda f, data: data)
+
+    return train_dataset, validation_dataset
+
+def display(display_list):
+    plt.figure(figsize=(15, 15))
+
+    title = ['Input Image', 'Predicted Mask']
+
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i+1)
+        plt.title(title[i])
+        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        plt.axis('off')
+    plt.show()
 

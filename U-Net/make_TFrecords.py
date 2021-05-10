@@ -58,7 +58,7 @@ def main(_argv):
     mask_path = [os.path.join(PATH_MASK, imgs) for imgs in np.sort(os.listdir(PATH_MASK))]
 
 
-    # Create tfrecords file
+    # Create tfrecord file
 
     if not 'tfrecords' in os.listdir():
         os.mkdir('tfrecords')
