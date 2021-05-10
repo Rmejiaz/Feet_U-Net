@@ -49,7 +49,7 @@ def main(_argv):
     model.compile(
                 optimizer = 'adam',
                 metrics = ['accuracy'], 
-                loss = tf.keras.losses.SparseCategoricalCrossentropy()
+                loss = tf.keras.losses.BinaryCrossentropy()
                 )
 
     # Train the model
