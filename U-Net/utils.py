@@ -169,4 +169,6 @@ def display(display_list):
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
     plt.show()
+ def DiceSimilarity(Pred, Set):
+    return np.sum(Pred[Set==1]==1)*2.0 / (np.sum(Pred[Pred==1]==1) + np.sum(Set[Set==1]==1))
 
