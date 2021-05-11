@@ -169,6 +169,6 @@ def display(display_list):
         plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
         plt.axis('off')
     plt.show()
- def DiceSimilarity(Pred, Set):
-    return np.sum(Pred[Set==1]==1)*2.0 / (np.sum(Pred[Pred==1]==1) + np.sum(Set[Set==1]==1))
+ def DiceSimilarity(Pred, Set, label=1): #Dice similarity is defined as 2*|X ∩ Y|/(|X|+|Y|)
+    return np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
 
