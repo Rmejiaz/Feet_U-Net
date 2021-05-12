@@ -40,14 +40,17 @@ def main(_argv):
     X = tf.expand_dims(X,0)
 
     # Load the model and the weights
-    model = get_model(output_channels=classes, size=img_size)
+    model = get_model(output_channels=1, size=img_size)
     model.load_weights(weights_path)
 
     # Make the prediction
+    threshold = 0.3
     Y = model.predict(X)   
-    Y = tf.argmax(Y,axis=-1)
-    Y = utils.categorical2mask(Y[0],labels)
-    Y = cv2.resize(Y, (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
+    #Y = tf.argmax(Y,axis=-1)
+    Y = Y/Y.max()
+    Y = np.where(Y>=threshold,1,0)
+    # Y = utils.categorical2mask(Y[0],labels)
+    Y = cv2.resize(Y[0], (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
 
     if show_results:
         utils.display([img, Y])
@@ -56,7 +59,5 @@ def main(_argv):
         Y = cv2.cvtColor(Y, cv2.COLOR_BGR2RGB)
         cv2.imwrite(out_path, Y)
 
-    print(Y.shape)
-    print(np.max(Y))
 if __name__ == "__main__":
     app.run(main)

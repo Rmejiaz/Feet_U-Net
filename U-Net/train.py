@@ -5,6 +5,7 @@ from model import get_model
 import matplotlib.pyplot as plt
 import utils
 import os 
+from tensorflow.keras import backend as K
 
 flags.DEFINE_string('train_Dataset','./tfrecords/train-data.tfrecord','path to train Dataset')
 flags.DEFINE_float('val_split',0.2,'size of the validation split')
@@ -14,12 +15,19 @@ flags.DEFINE_integer('batch_size', 5, 'batch size')
 flags.DEFINE_integer('epochs', 10, 'Epochs')
 flags.DEFINE_integer('save_freq', 5, 'frequency of epochs to save')
 
+def dice_coef(y_true, y_pred, smooth=1):
+  intersection = K.sum(y_true * y_pred, axis=[1,2,3])
+  union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
+  dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
+  return dice
+
+
 def main(_argv):
 
     # Initialize variables
     checkpoint_path = FLAGS.weights+'cp-{epoch:04d}.ckpt'
     image_size = 224
-    classes = 2
+    classes = 1
     train_Dataset_path = FLAGS.train_Dataset
 
 
@@ -48,7 +56,7 @@ def main(_argv):
     model.save_weights(checkpoint_path.format(epoch=0))
     model.compile(
                 optimizer = 'adam',
-                metrics = ['accuracy'], 
+                metrics = [tf.keras.metrics.MeanIoU(num_classes = 2),dice_coef],
                 loss = tf.keras.losses.BinaryCrossentropy()
                 )
 

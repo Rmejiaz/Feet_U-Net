@@ -19,7 +19,7 @@ def download_dataset():
     script3 = """rm Data.zip"""
     os.system(script1) # Download zip
     os.system(script2) # unzip
-    os.system(script3) # delete zip
+    os.system(script3) # Delete zip
 
 def main(_argv):
     path = FLAGS.path

@@ -64,8 +64,12 @@ def categorical2mask(X, labels):
     labels: dict
         dict containing the labelmap that describes the rgb values of each label
     """
-    Y = np.zeros(X.shape[0:2] + [3], dtype="uint8")
+    X_shape = X.shape[0:2]
+    if type(X_shape) == tuple:
+        X_shape = list(X_shape)
+    Y = np.zeros(X_shape + [3], dtype="uint8")
     for i, key in enumerate(labels):
+        print(X.shape,Y.shape)
         Y[...,0] = np.where(X==i, labels[key][0], Y[...,0])
         Y[...,1] = np.where(X==i, labels[key][1], Y[...,1])
         Y[...,2] = np.where(X==i, labels[key][2], Y[...,2])
@@ -96,6 +100,7 @@ def parse_labelfile(path):
     """
     with open(path, "r") as FILE:
         lines = FILE.readlines()
+
 
     labels = {x.split(":")[0]: x.split(":")[1] for x in lines[1:]}
 
@@ -166,7 +171,11 @@ def display(display_list):
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
         plt.title(title[i])
-        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        # plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        if len(display_list[i].shape) == 2:
+            plt.imshow((display_list[i]),cmap='gray')
+        else:
+            plt.imshow((display_list[i]))
         plt.axis('off')
     plt.show()
 
