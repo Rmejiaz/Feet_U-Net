@@ -179,3 +179,17 @@ def display(display_list):
         plt.axis('off')
     plt.show()
 
+
+def load_data(path,size):
+    images = os.listdir(path)
+    images.sort()
+
+    X = []
+    for i, img in enumerate(images):
+        photo = plt.imread(os.path.join(path,img))
+        photo = tf.image.resize(photo, (size, size))
+        X.append(photo)
+        
+    X = np.array(X)
+    return X        
+

@@ -10,7 +10,7 @@ def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=False
         layer.add(tf.keras.layers.BatchNormalization())
 
     if dropout:
-        layer.add(tf.keras.layers.Dropout(0.5))
+        layer.add(tf.keras.layers.Dropout(0.3))
 
     layer.add(tf.keras.layers.ReLU())
 
@@ -30,16 +30,16 @@ def get_encoder(input_shape=[None,None,3],name="encoder"):
 
     # Create the feature extraction model
     encoder  = tf.keras.Model(inputs=Input, outputs=layers,name=name)
-    encoder.trainable = True
+    encoder.trainable = False
 
     return encoder
 
 def get_decoder(skips):
     up_stack = [
-        upsample(512, 3),  # 4x4 -> 8x8
-        upsample(256, 3),  # 8x8 -> 16x16
-        upsample(128, 3),  # 16x16 -> 32x32
-        upsample(64, 3),   # 32x32 -> 64x64
+        upsample(512, 3,dropout=True),  # 4x4 -> 8x8
+        upsample(256, 3,dropout=True),  # 8x8 -> 16x16
+        upsample(128, 3,dropout=True),  # 16x16 -> 32x32
+        upsample(64, 3,dropout=True),   # 32x32 -> 64x64
     ]
     x = skips[-1]
     skips = reversed(skips[:-1])

@@ -10,8 +10,7 @@ def download_dataset():
     Function for downloading the feet dataset inside a google colab or kaggle notebook. It can also work in jupyter in linux.
     It just downloads the complete dataset in the current directory
     """
-    
-    ID = "1-3_oB5iSF-c_V65-uSdUlo024NzlgSYZ"
+    ID = "1-Lmq2wcdn9_p2YELFNXjrduQgK6CxqCR"
     script1 = f"""
     wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id='{ID} -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id="{ID} -O Data.zip && rm -rf /tmp/cookies.txt
     """
@@ -19,7 +18,7 @@ def download_dataset():
     script3 = """rm Data.zip"""
     os.system(script1) # Download zip
     os.system(script2) # unzip
-    os.system(script3) # Delete zip
+    os.system(script3) # delete zip
 
 def main(_argv):
     path = FLAGS.path
