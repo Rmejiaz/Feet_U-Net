@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import utils
 import numpy as np
 import cv2
+from model2 import UNET2D
 
 
 flags.DEFINE_string("image_path", "./Dataset_Unificado/Test/JPEGImages/yorladis_correa_1055835278_t30.jpg", "input image path")
@@ -25,7 +26,7 @@ def main(_argv):
     out_path = FLAGS.mask_path
     weights_path = FLAGS.weights
     show_results = FLAGS.show_results
-    img_size = 224
+    img_size = 128
     LABELS_PATH = FLAGS.labels
 
     # Read and parse the labelmap file
@@ -34,17 +35,20 @@ def main(_argv):
     classes = len(labels)
 
     # Read the image
-    img = plt.imread(img_path)
+    img = plt.imread(img_path)/255.
     X = tf.convert_to_tensor(img)
     X = tf.image.resize(X,(img_size,img_size))
+    # X = X[:,:,0]
     X = tf.expand_dims(X,0)
+    # X = tf.expand_dims(X,-1)
 
     # Load the model and the weights
     model = get_model(output_channels=1, size=img_size)
+    # model = UNET2D(input_size = (img_size,img_size,1))
     model.load_weights(weights_path)
 
     # Make the prediction
-    threshold = 0.2
+    threshold = 0.5
     Y = model.predict(X)   
     #Y = tf.argmax(Y,axis=-1)
     Y = Y/Y.max()
@@ -53,7 +57,7 @@ def main(_argv):
     Y = cv2.resize(Y[0], (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
 
     if show_results:
-        utils.display([img, Y])
+        utils.display([img,Y])
 
     if out_path != None:
         Y = cv2.cvtColor(Y, cv2.COLOR_BGR2RGB)

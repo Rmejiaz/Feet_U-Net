@@ -36,10 +36,10 @@ def get_encoder(input_shape=[None,None,3],name="encoder"):
 
 def get_decoder(skips):
     up_stack = [
-        upsample(512, 3,dropout=True),  # 4x4 -> 8x8
-        upsample(256, 3,dropout=True),  # 8x8 -> 16x16
-        upsample(128, 3,dropout=True),  # 16x16 -> 32x32
-        upsample(64, 3,dropout=True),   # 32x32 -> 64x64
+        upsample(512, 3,dropout=False),  # 4x4 -> 8x8
+        upsample(256, 3,dropout=False),  # 8x8 -> 16x16
+        upsample(128, 3,dropout=False),  # 16x16 -> 32x32
+        upsample(64, 3,dropout=False),   # 32x32 -> 64x64
     ]
     x = skips[-1]
     skips = reversed(skips[:-1])

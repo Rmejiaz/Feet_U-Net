@@ -2,6 +2,7 @@ import os
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import xml.etree.ElementTree as ET
 
 def download_dataset():
     """
@@ -164,9 +165,10 @@ def split_dataset(dataset: tf.data.Dataset, validation_data_fraction: float):
     return train_dataset, validation_dataset
 
 def display(display_list):
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(20, 15))
 
-    title = ['Input Image', 'Predicted Mask']
+    display_list.append(display_list[0][:,:,0]+display_list[1])
+    title = ['Input Image', 'Predicted Mask','Overlay']
 
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
@@ -181,6 +183,19 @@ def display(display_list):
 
 
 def load_data(path,size):
+    """
+    Load a set of images to memory
+    Parameters
+    ------------
+    path : str
+        path to the directory of the images
+    size : int
+        size to resize the images
+    Returns
+    --------
+    np.ndarray
+        array of dimensions (n_images, size, size, n_channels)
+    """
     images = os.listdir(path)
     images.sort()
 
@@ -191,5 +206,15 @@ def load_data(path,size):
         X.append(photo)
         
     X = np.array(X)
-    return X        
+    X = X/X.max() 
+    return X  
+
+
+def display_mask(img,mask):
+    plt.figure(figsize=(15,15))
+    img = img[:,:,0]
+    image = img+mask
+    plt.imshow(image,cmap='gray')
+    plt.title("Predicted Mask")
+    plt.show()    
 
