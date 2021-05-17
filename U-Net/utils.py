@@ -182,7 +182,7 @@ def display(display_list):
     plt.show()
 
 
-def load_data(path,size):
+def load_data(path,size, scale = True):
     """
     Load a set of images to memory
     Parameters
@@ -202,11 +202,13 @@ def load_data(path,size):
     X = []
     for i, img in enumerate(images):
         photo = plt.imread(os.path.join(path,img))
-        photo = tf.image.resize(photo, (size, size))
+        if size:
+            photo = tf.image.resize(photo, (size, size))
         X.append(photo)
         
     X = np.array(X)
-    X = X/X.max() 
+    if scale:
+        X = X/X.max() 
     return X  
 
 
@@ -218,10 +220,10 @@ def display_mask(img,mask):
     plt.title("Predicted Mask")
     plt.show()    
     
- def DiceSimilarity(Pred, Set, label=1): #Dice similarity is defined as 2*|X ∩ Y|/(|X|+|Y|)
+def DiceSimilarity(Pred, Set, label=1): #Dice similarity is defined as 2*|X ∩ Y|/(|X|+|Y|)
     return np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
 
- def DiceImages(PathPred, PathSet):
+def DiceImages(PathPred, PathSet):
     #Predicted Mask
     Pred = plt.imread(PathPred)
     
@@ -241,8 +243,8 @@ def display_mask(img,mask):
     Set = tf.convert_to_tensor(Set, dtype=tf.uint8)
     
     #Mask to categorical
-    Pred = mask2categorical(Pred).numpy() 
-    Set = mask2categorical(Set).numpy()
+    # Pred = mask2categorical(Pred).numpy() 
+    # Set = mask2categorical(Set).numpy()
     
     Dice = {}
     for i in np.unique(np.append(np.unique(Pred), np.unique(Set))): #i is the labels in Pred and Set. 

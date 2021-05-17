@@ -11,8 +11,10 @@ It is possible to download the [feet dataset](https://drive.google.com/drive/fol
 ```shell
 python U-Net/download_dataset.py --path=DOWNLOAD PATH
 ```
-
 The download path is relative to the current directory, if left unspecified it will download the dataset to the current working direcory.
+
+Working example of training and prediction: https://colab.research.google.com/drive/1ODqQGpF4-0Cf6RPxyjy4_AqOZ1WBRb-7#scrollTo=ai-YYmBNIYWp
+
 
 ## TO DO
 
