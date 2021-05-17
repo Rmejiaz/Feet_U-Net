@@ -217,4 +217,41 @@ def display_mask(img,mask):
     plt.imshow(image,cmap='gray')
     plt.title("Predicted Mask")
     plt.show()    
+    
+ def DiceSimilarity(Pred, Set, label=1): #Dice similarity is defined as 2*|X ∩ Y|/(|X|+|Y|)
+    return np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
+
+ def DiceImages(PathPred, PathSet):
+    #Predicted Mask
+    Pred = plt.imread(PathPred)
+    
+    #Float to uint
+    if Pred.dtype == np.float32: 
+        Pred = (Pred*255).astype(np.uint8)
+        
+    #Image to Tensor
+    Pred = tf.convert_to_tensor(Pred, dtype=tf.uint8) 
+    
+    #Real Mask
+    Set = plt.imread(PathSet) 
+    
+    if Set.dtype == np.float32:
+        Set = (Set*255).astype(np.uint8)
+    
+    Set = tf.convert_to_tensor(Set, dtype=tf.uint8)
+    
+    #Mask to categorical
+    Pred = mask2categorical(Pred).numpy() 
+    Set = mask2categorical(Set).numpy()
+    
+    Dice = {}
+    for i in np.unique(np.append(np.unique(Pred), np.unique(Set))): #i is the labels in Pred and Set. 
+        Dice[i] = DiceSimilarity(Pred, Set, i)                      #Since it is possible for one to have labels the other doesn't we need to append the sets
+    
+    return Dice
+        
+    
+    
+    
+    
 
