@@ -66,7 +66,7 @@ def main(_argv):
     names.sort()
 
     for i, name in enumerate(names):
-        plt.imsave(os.path.join(results_path, 'Predictions', name), Y_pred[i,:,:,0], cmap='gray')
+        plt.imsave(os.path.join(results_path, 'Predictions', name), Y_pred[i,:,:,0]+imgs[i,:,:,0], cmap='gray')
 
     
     # Compute dice for each prediction
