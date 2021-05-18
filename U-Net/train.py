@@ -7,6 +7,7 @@ import utils
 import os 
 from tensorflow.keras import backend as K
 import numpy as np
+from utils import DiceSimilarity, jaccard
 
 flags.DEFINE_string('train_Dataset','./tfrecords/train-data.tfrecord','path to train Dataset')
 flags.DEFINE_float('val_split',0.2,'size of the validation split')
@@ -15,12 +16,6 @@ flags.DEFINE_integer('buffer_size', 100, 'buffer')
 flags.DEFINE_integer('batch_size', 5, 'batch size')
 flags.DEFINE_integer('epochs', 10, 'Epochs')
 flags.DEFINE_integer('save_freq', 5, 'frequency of epochs to save')
-
-def dice_coef(y_true, y_pred):
-  intersection = K.sum(y_true * y_pred, axis=[1,2,3])
-  union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
-  dice = K.mean((2. * intersection)/(union), axis=0)
-  return dice
 
 
 def main(_argv):
@@ -34,8 +29,6 @@ def main(_argv):
 
     # Load train dataset
     
-    # train_Dataset =  utils.load_tfrecord_dataset(train_Dataset_path,image_size)
-    # train_Dataset = train_Dataset.shuffle(buffer_size=FLAGS.buffer_size)
     X_path = "./Dataset_Unificado/Train/Processed_Images"
     Y_path = "./Dataset_Unificado/Train/BinaryMasks"
     X = utils.load_data(X_path,size=image_size)
@@ -43,16 +36,14 @@ def main(_argv):
     Y = Y[:,:,:,0]
     Y = np.expand_dims(Y,axis=-1)
 
-    # Split train and validation according to val_split
+    # Load test dataset
 
-    # train_Dataset, val_Dataset = utils.split_dataset(train_Dataset,FLAGS.val_split)
-
-    # Batch and prefetch
-
-    # train_Dataset = train_Dataset.batch(FLAGS.batch_size,drop_remainder=True)
-    # train_Dataset = train_Dataset.prefetch(buffer_size = tf.data.experimental.AUTOTUNE)
-    # val_Dataset = val_Dataset.batch(FLAGS.batch_size,drop_remainder=True)
-    # val_Dataset = val_Dataset.prefetch(buffer_size = tf.data.experimental.AUTOTUNE)
+    X_val_path = "./Dataset_Unificado/Test/Processed_Images"
+    Y_val_path = "./Dataset_Unificado/Test/BinaryMasks"
+    X_val = utils.load_data(X_val_path,size=image_size)
+    Y_val = utils.load_data(Y_val_path, size=image_size)
+    Y_val = Y_val[:,:,:,0]
+    Y_val = np.expand_dims(Y_val,axis=-1)
 
     # Load model
 
@@ -71,7 +62,7 @@ def main(_argv):
     model.save_weights(checkpoint_path.format(epoch=0))
     model.compile(
                 optimizer = tf.keras.optimizers.Adam(),
-                metrics = [dice_coef],
+                metrics = [utils.dice_coef, utils.iou_coef],
                 loss = tf.keras.losses.BinaryCrossentropy()
                 )
 
@@ -79,8 +70,8 @@ def main(_argv):
     model_history = model.fit(
                             x = X,
                             y = Y,
+                            validation_data = (X_val,Y_val),
                             epochs =FLAGS.epochs,
-                            validation_split = FLAGS.val_split,
                             batch_size = FLAGS.batch_size,
                             callbacks = [cp_callback]
                              )

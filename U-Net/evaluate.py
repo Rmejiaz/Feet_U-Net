@@ -14,11 +14,11 @@ import os
 flags.DEFINE_string('test_images','./Dataset_Unificado/Test/Processed_Images/','path to the test images')
 flags.DEFINE_string('test_masks','./Dataset_Unificado/Test/BinaryMasks/','path to the test masks')
 flags.DEFINE_string('results','./results/','path to save the results')
-flags.DEFINE_string('weights','./weights/cp-0094.ckpt','path of the weights to use')
+flags.DEFINE_string('weights','./weights/cp-0100.ckpt','path of the weights to use')
 
 def main(_argv):
 
-    img_size = 128
+    img_size = 224
 
     images_path = FLAGS.test_images
     masks_path = FLAGS.test_masks
@@ -69,18 +69,20 @@ def main(_argv):
         plt.imsave(os.path.join(results_path, 'Predictions', name), Y_pred[i,:,:,0]+imgs[i,:,:,0], cmap='gray')
 
     
-    # Compute dice for each prediction
+    # Compute dice and jaccard for each prediction
 
-    Dice = [utils.DiceSimilarity(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])]
+    Dice = np.array([utils.DiceSimilarity(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])])
+    Jaccard = np.array([utils.jaccard(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])])
 
     plt.figure(figsize=(16,9))
-    plt.boxplot(np.array(Dice))
-    title = f"""Dice score on test set
-    \n Mean dice = ${round(np.array(Dice).mean(),3)} \pm {round(np.array(Dice).std(),3)}$"""
-    plt.title(title)
-    plt.savefig(os.path.join(results_path, 'TestDice.png'))
+    plt.boxplot([Dice, Jaccard])
+    title = f"""Dice and Jaccard scores on test set
+    \n Mean Dice = ${round(Dice.mean(),3)} \pm {round(Dice.std(),3)}$
+    \n Mean Jaccard = ${round(Jaccard.mean(),3)} \pm {round(Jaccard.std(),3)}$"""
+    plt.title(title,fontsize=10)
+    plt.xticks(ticks=[1,2],labels = ['Dice', 'Jaccard'])
+    plt.savefig(os.path.join(results_path, 'TestScores.png'))
     plt.show()
-    print(f"Mean dice score: {np.array(Dice).mean()} +/- {np.array(Dice).std()}")
-
+    
 if __name__ == '__main__':
     app.run(main)

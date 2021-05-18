@@ -49,7 +49,7 @@ def get_decoder(skips):
         x = tf.keras.layers.Concatenate()([x,skip])
     return x
 
-def get_model(output_channels=1,size=128,name="U-Net"):
+def get_model(output_channels=1,size=224,name="U-Net"):
     x = inputs = tf.keras.layers.Input(shape=[size,size,3])
 
     skips = get_encoder(input_shape=list(x.shape[1:]))(x)
