@@ -69,7 +69,7 @@ def main(_argv):
         plt.imsave(os.path.join(results_path, 'Predictions', name), Y_pred[i,:,:,0]+imgs[i,:,:,0], cmap='gray')
 
     
-    # Compute dice and jaccard for each prediction
+    # Compute and plot dice and jaccard for each prediction
 
     Dice = np.array([utils.DiceSimilarity(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])])
     Jaccard = np.array([utils.jaccard(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])])
