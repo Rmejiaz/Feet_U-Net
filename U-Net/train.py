@@ -30,7 +30,7 @@ def main(_argv):
     X_path = FLAGS.imgs_path
     Y_path = FLAGS.masks_path
     X_val_path = FLAGS.val_imgs
-    Y_val_path = FLAGS.val_imgs
+    Y_val_path = FLAGS.val_masks
     val_split = FLAGS.val_split
     # Load train dataset
     
