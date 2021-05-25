@@ -68,10 +68,10 @@ Make a prediction for a test set and measure dice and jaccard scores
 
 ### [Segmentation](./U-Net):
 
-- U-Net implementation to segment feet and background.
+- ~~U-Net implementation to segment feet and background.~~
 - U-Net implementation to segment the differentes parts of the foot.
 - Create a toy dataset to compare the performance.
-- Data augmentation
-- Re-label the dataset (optional)
-
-### [GUI](./GUI):
+- ~~Data augmentation~~
+- ~~Re-label the dataset (optional)~~
+- Improve Dice to at least 80%.
+- ~~Closing and Opening~~
