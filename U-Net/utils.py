@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
 from tensorflow.keras import backend as K
 from sklearn.metrics import jaccard_score
+from skimage.morphology import erosion, dilation
 
 def download_dataset():
     """
@@ -277,3 +278,16 @@ def iou_coef(y_true, y_pred):
   iou = K.mean((intersection) / (union), axis=0)
   return iou
 
+def n_opening(Img, n):
+  for i in range(n):
+    Img = erosion(Img)
+  for i in range(n):
+    Img = dilation(Img)
+  return Img
+
+def n_closing(Img, n):
+  for i in range(n):
+    Img = dilation(Img)
+  for i in range(n):
+    Img = erosion(Img)
+  return Img
