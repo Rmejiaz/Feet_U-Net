@@ -2,4 +2,5 @@ tensorflow
 opencv-python
 matplotlib
 numpy
-
+scikit-image
+scikit-learn
