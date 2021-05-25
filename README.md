@@ -11,7 +11,7 @@ $ pip install -r requirements.txt
 ```
 ### Download the dataset
 
-It is possible to download the [feet dataset](https://drive.google.com/drive/folders/11a8eyrhjsk6Mh80bxv4D49j6s8khECs_?usp=sharing) in google colab, kaggle, or a linux machine running the script `download_dataset.py` as follows:
+It is possible to download the [feet dataset](https://drive.google.com/drive/folders/1n7DYb1qUUBPdBHXFmVjraCkfEQj3Cael?usp=sharing) in google colab, kaggle, or a linux machine executing the script `download_dataset.py` as follows:
 
 ```bash
 $ python U-Net/download_dataset.py --path=DOWNLOAD PATH
@@ -29,7 +29,15 @@ $ python U-Net/augmentation.py --img_path=PATH TO IMAGES DIRECTORY --masks_path=
 It will automatically create a new set in the specified path. If left unspecified, it creates the new dataset in the current working directory. By default, `img_path = ./Dataset_Unificado/Train/Processed_Images` , `masks_path = ./Dataset_Unificado/Train/BinaryMasks` , `labels = ./Dataset_Unificado/binary_labelmap.txt` and `n_images = 192`  
 
 
-### Download pretrained weights (TO DO)
+### [Download pretrained model](https://drive.google.com/file/d/1S-pUZZONC3fqMSvXfBg_7tGdxtkLIs-F/view?usp=sharing)
+
+It is also possible to download a pretrained model, which can be later used to make predictions as follows:
+
+```python
+model = tf.keras.models.load_model('Model1.h5')
+
+Y_pred = model.predict(X)
+```
 
 ### Train 
 
