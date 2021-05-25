@@ -223,7 +223,10 @@ def display_mask(img,mask):
     plt.show()    
     
 def DiceSimilarity(Pred, Set, label=1): #Dice similarity is defined as 2*|X ∩ Y|/(|X|+|Y|)
-    return np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
+    D = np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
+    if np.isnan(D):
+      D = 1
+    return D
 
 def DiceImages(PathPred, PathSet):
     #Predicted Mask
