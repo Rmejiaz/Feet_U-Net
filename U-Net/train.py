@@ -127,7 +127,7 @@ def main(_argv):
     plt.title('Model history')
     plt.legend()
     plt.grid()
-
+    plt.ylim(0,1)
     # Save the figure
     i = 0
     flag = True

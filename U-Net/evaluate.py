@@ -33,12 +33,15 @@ def main(_argv):
         X.append(photo)
 
     X = np.array(X)
+    X = X[:,:,:,0]
+    X = np.expand_dims(X, axis=-1)
+
 
     Y = utils.load_data(path = masks_path, size = None)
     Y = Y[:,:,:,0]
     
     # Load the model and the weights
-    model = get_model(output_channels=1, size=img_size)
+    model = UNET2D()
     model.load_weights(weights_path)
 
     # Make the prediction
@@ -71,16 +74,18 @@ def main(_argv):
     
     # Compute dice for each prediction
 
-    Dice = [utils.DiceSimilarity(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])]
+    Dice = np.array([utils.DiceSimilarity(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])])
+    Jaccard = np.array([utils.jaccard(Y[i,:,:], Y_pred[i,:,:,0]) for i in range(Y.shape[0])])
 
     plt.figure(figsize=(16,9))
-    plt.boxplot(np.array(Dice))
-    title = f"""Dice score on test set
-    \n Mean dice = ${round(np.array(Dice).mean(),3)} \pm {round(np.array(Dice).std(),3)}$"""
-    plt.title(title)
-    plt.savefig(os.path.join(results_path, 'TestDice.png'))
+    plt.boxplot([Dice, Jaccard])
+    title = f"""Dice and Jaccard scores on test set
+    \n Mean Dice = ${round(Dice.mean(),3)} \pm {round(Dice.std(),3)}$
+    \n Mean Jaccard = ${round(Jaccard.mean(),3)} \pm {round(Jaccard.std(),3)}$"""
+    plt.title(title,fontsize=10)
+    plt.xticks(ticks=[1,2],labels = ['Dice', 'Jaccard'])
+    plt.savefig(os.path.join(results_path, 'TestScores.png'))
     plt.show()
-    print(f"Mean dice score: {np.array(Dice).mean()} +/- {np.array(Dice).std()}")
 
 if __name__ == '__main__':
     app.run(main)

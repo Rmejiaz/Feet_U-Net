@@ -44,7 +44,7 @@ def main(_argv):
     model.load_weights(weights_path)
 
     # Make the prediction
-    threshold = 0.9
+    threshold = 0.5
     Y = model.predict(X)   
     #Y = tf.argmax(Y,axis=-1)
     Y = Y/Y.max()
