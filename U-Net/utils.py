@@ -3,6 +3,9 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
+from tensorflow.keras import backend as K
+from sklearn.metrics import jaccard_score
+from skimage.morphology import erosion, dilation
 
 def download_dataset():
     """
@@ -221,7 +224,10 @@ def display_mask(img,mask):
     plt.show()    
     
 def DiceSimilarity(Pred, Set, label=1): #Dice similarity is defined as 2*|X ∩ Y|/(|X|+|Y|)
-    return np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
+    D = np.sum(Pred[Set==label]==label)*2.0 / (np.sum(Pred[Pred==label]==label) + np.sum(Set[Set==label]==label))
+    if np.isnan(D):
+      D = 1
+    return D
 
 def DiceImages(PathPred, PathSet):
     #Predicted Mask
@@ -252,7 +258,38 @@ def DiceImages(PathPred, PathSet):
     
     return Dice
         
+def jaccard(y_true,y_pred):
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    y_true = y_true.reshape(-1)
+    y_pred = y_pred.reshape(-1)
+    return jaccard_score(y_true,y_pred)
     
+def dice_coef(y_true, y_pred):
+    intersection = K.sum(y_true * y_pred, axis=[1,2,3])
+    union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
+    dice = K.mean((2. * intersection)/(union), axis=0)
+    return dice
+
+def iou_coef(y_true, y_pred):
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[1,2,3])
+    union = K.sum(y_true,[1,2,3])+K.sum(y_pred,[1,2,3])-intersection
+    iou = K.mean((intersection) / (union), axis=0)
+    return iou
+
+def n_opening(Img, n):
+    for i in range(n):
+        Img = erosion(Img)
+    for i in range(n):
+        Img = dilation(Img)
+    return Img
+
+def n_closing(Img, n):
+    for i in range(n):
+        Img = dilation(Img)
+    for i in range(n):
+        Img = erosion(Img)
+    return Img
     
     
     

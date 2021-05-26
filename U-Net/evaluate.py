@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import utils
 from absl import app, flags, logging
 from absl.flags import FLAGS
-from model import get_model
+from model import UNET2D
 import cv2
 import os
 

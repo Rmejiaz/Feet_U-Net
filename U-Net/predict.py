@@ -2,13 +2,12 @@ import logging
 logging.getLogger("tensorflow").setLevel(logging.ERROR) ## Disable tf Warnings
 from absl import app, flags, logging
 from absl.flags import FLAGS
-from model import get_model
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import utils
 import numpy as np
 import cv2
-from model2 import UNET2D
+from model import UNET2D
 
 
 flags.DEFINE_string("image_path", "./Dataset_Unificado/Test/JPEGImages/yorladis_correa_1055835278_t30.jpg", "input image path")
@@ -32,23 +31,20 @@ def main(_argv):
     # Read and parse the labelmap file
     labels = utils.parse_labelfile(LABELS_PATH)
 
-    classes = len(labels)
-
     # Read the image
     img = plt.imread(img_path)/255.
     X = tf.convert_to_tensor(img)
     X = tf.image.resize(X,(img_size,img_size))
-    # X = X[:,:,0]
+    X = X[:,:,0]
     X = tf.expand_dims(X,0)
-    # X = tf.expand_dims(X,-1)
+    X = tf.expand_dims(X,-1)
 
     # Load the model and the weights
-    model = get_model(output_channels=1, size=img_size)
-    # model = UNET2D(input_size = (img_size,img_size,1))
+    model = UNET2D(input_size = (img_size,img_size,1))
     model.load_weights(weights_path)
 
     # Make the prediction
-    threshold = 0.5
+    threshold = 0.9
     Y = model.predict(X)   
     #Y = tf.argmax(Y,axis=-1)
     Y = Y/Y.max()

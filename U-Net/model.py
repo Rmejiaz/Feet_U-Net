@@ -74,3 +74,8 @@ def UNET2D(input_size = (128, 128, 1)):
 
                   
     return model
+
+if __name__ == '__main__':
+    model = UNET2D()
+    model.summary()
+    tf.keras.utils.plot_model(model,to_file='data/model.png',show_shapes=False,show_layer_names=False)
