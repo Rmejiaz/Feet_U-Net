@@ -11,7 +11,7 @@ import cv2
 
 
 
-flags.DEFINE_string("image_path", "./Dataset_CVAT/JPEGImages/Test/177.jpg", "input image path")
+flags.DEFINE_string("image_path", "./Dataset_CVAT2/JPEGImages/Test/177.jpg", "input image path")
 flags.DEFINE_string("mask_path", None, "path to save the predicted mask (recomended file extension: png)")
 flags.DEFINE_string("weights", "./weights/cp-0010.ckpt", "weights parameters path")
 flags.DEFINE_string("labels", "./Dataset_CVAT/labelmap.txt", "path to the annotation file")
@@ -27,12 +27,6 @@ def main(_argv):
     weights_path = FLAGS.weights
     show_results = FLAGS.show_results
     img_size = 224
-    LABELS_PATH = FLAGS.labels
-
-    # Read and parse the labelmap file
-    labels = utils.parse_labelfile(LABELS_PATH)
-
-    classes = len(labels)
 
     # Read the image
     img = plt.imread(img_path)/255.

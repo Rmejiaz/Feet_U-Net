@@ -11,8 +11,8 @@ from model import get_model
 import cv2
 import os
 
-flags.DEFINE_string('test_images','./Dataset_Unificado/Test/Processed_Images/','path to the test images')
-flags.DEFINE_string('test_masks','./Dataset_Unificado/Test/BinaryMasks/','path to the test masks')
+flags.DEFINE_string('test_images','./Dataset_CVAT2/JPEGImages/Test/','path to the test images')
+flags.DEFINE_string('test_masks','./Dataset_CVAT2/SegmentationClass/Test','path to the test masks')
 flags.DEFINE_string('results','./results/','path to save the results')
 flags.DEFINE_string('weights','./weights/cp-0100.ckpt','path of the weights to use')
 
