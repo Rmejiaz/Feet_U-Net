@@ -4,7 +4,7 @@ Semantic segmentation using a U-Net network architecture and temperature reading
 
 ![Example](./U-Net/results/example.png)
 
-## Google Colab demo: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ODqQGpF4-0Cf6RPxyjy4_AqOZ1WBRb-7?usp=sharing)
+## Google Colab demo: [![Open In Colab](https://colab.research.google.com/drive/1QGY1psKXsUyWZUVVVOPMfwFSE6_Q3EZA?usp=sharing)
 
 ## Usage
 
