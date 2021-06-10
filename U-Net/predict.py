@@ -51,8 +51,7 @@ def main(_argv):
         utils.display([img,Y])
 
     if out_path != None:
-        Y = cv2.cvtColor(Y, cv2.COLOR_BGR2RGB)
-        cv2.imwrite(out_path, Y)
+        plt.imsave(out_path, Y, cmap='gray')
 
 if __name__ == "__main__":
     app.run(main)

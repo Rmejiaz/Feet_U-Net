@@ -2,7 +2,7 @@
 
 Semantic segmentation using a U-Net network architecture and temperature reading from termographic images of feet.
 
-![Example](./U-Net/results/example.png)
+![Example](./U-Net/results/best_prediction.png)
 
 ## Google Colab demo: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ODqQGpF4-0Cf6RPxyjy4_AqOZ1WBRb-7?usp=sharing)
 
@@ -13,9 +13,9 @@ Semantic segmentation using a U-Net network architecture and temperature reading
 ```bash
 $ pip install -r requirements.txt
 ```
-### Download the dataset (not working for the moment)
+### Download the dataset
 
-It is possible to download the [feet dataset](https://drive.google.com/drive/folders/1n7DYb1qUUBPdBHXFmVjraCkfEQj3Cael?usp=sharing) in google colab, kaggle, or a linux machine executing the script `download_dataset.py` as follows:
+It is possible to download the [feet dataset](https://drive.google.com/drive/folders/16nbmFG2MucF6UlY05rPajx4G81vttg4O?usp=sharing) in google colab, kaggle, or a linux machine executing the script `download_dataset.py` as follows:
 
 ```bash
 $ python U-Net/download_dataset.py --path=DOWNLOAD PATH
