@@ -19,7 +19,7 @@ flags.DEFINE_integer('buffer_size', 100, 'buffer')
 flags.DEFINE_integer('batch_size', 5, 'batch size')
 flags.DEFINE_integer('epochs', 10, 'Epochs')
 flags.DEFINE_integer('save_freq', 5, 'frequency of epochs to save')
-
+flags.DEFINE_string('save_model', './results/Model.h5', 'path to save the model in (.h5 format is recommended')
 
 def main(_argv):
 
@@ -32,6 +32,7 @@ def main(_argv):
     X_val_path = FLAGS.val_imgs
     Y_val_path = FLAGS.val_masks
     val_split = FLAGS.val_split
+    save_model = FLAGS.save_model
     # Load train dataset
     
     X = utils.load_data(X_path,size=image_size)
@@ -114,6 +115,10 @@ def main(_argv):
             flag=False
 
     plt.show()
+
+    # Save the model in .h5
+
+    model.save(save_model)
 
 if __name__ == '__main__':
     app.run(main)

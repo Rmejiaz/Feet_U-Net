@@ -9,23 +9,21 @@ import utils
 import numpy as np
 import cv2
 
-
-
 flags.DEFINE_string("image_path", "./Dataset_CVAT2/JPEGImages/Test/177.jpg", "input image path")
 flags.DEFINE_string("mask_path", None, "path to save the predicted mask (recomended file extension: png)")
-flags.DEFINE_string("weights", "./weights/cp-0010.ckpt", "weights parameters path")
+flags.DEFINE_string("model_path", "./results/Model.h5", "weights to use or .h5 model")
 flags.DEFINE_string("labels", "./Dataset_CVAT/labelmap.txt", "path to the annotation file")
 flags.DEFINE_bool("show_results", True, "show prediction result")
-
-
+flags.DEFINE_bool("clean_prediction", True, "post-process the prediction (remove all the small objects)")
 
 def main(_argv):
 
     # Initialize variables
     img_path = FLAGS.image_path
     out_path = FLAGS.mask_path
-    weights_path = FLAGS.weights
     show_results = FLAGS.show_results
+    clean_prediction = FLAGS.clean_prediction
+    model_path = FLAGS.model_path
     img_size = 224
 
     # Read the image
@@ -37,15 +35,23 @@ def main(_argv):
     # X = tf.expand_dims(X,-1)
 
     # Load the model and the weights
-    model = get_model(output_channels=1, size=img_size)
-    model.load_weights(weights_path)
+    if (model_path[-4:] == 'ckpt'):
+        model = get_model(output_channels=1, size=img_size)
+        model.load_weights(model_path)
+
+    elif (model_path[-2:] == 'h5'):
+        model = tf.keras.models.load_model(model_path)
 
     # Make the prediction
     threshold = 0.5
     Y = model.predict(X)   
     Y = Y/Y.max()
     Y = np.where(Y>=threshold,1,0)
-    Y = cv2.resize(Y[0], (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
+
+    if clean_prediction:
+        Y = utils.remove_small_objects(Y[0,:,:,0])
+
+    Y = cv2.resize(Y, (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
 
     if show_results:
         utils.display([img,Y])

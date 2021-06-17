@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 from tensorflow.keras import backend as K
 from sklearn.metrics import jaccard_score
 from skimage.morphology import erosion, dilation
+from sklearn.metrics import confusion_matrix
+import cv2
 
 def download_dataset():
     """
@@ -223,27 +225,108 @@ def jaccard(y_true,y_pred):
     return jaccard_score(y_true,y_pred)
     
 def dice_coef(y_true, y_pred):
-  intersection = K.sum(y_true * y_pred, axis=[1,2,3])
-  union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
-  dice = K.mean((2. * intersection)/(union), axis=0)
-  return dice
+    intersection = K.sum(y_true * y_pred, axis=[1,2,3])
+    union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
+    dice = K.mean((2. * intersection)/(union), axis=0)
+    return dice
 
 def iou_coef(y_true, y_pred):
-  intersection = K.sum(K.abs(y_true * y_pred), axis=[1,2,3])
-  union = K.sum(y_true,[1,2,3])+K.sum(y_pred,[1,2,3])-intersection
-  iou = K.mean((intersection) / (union), axis=0)
-  return iou
+    intersection = K.sum(K.abs(y_true * y_pred), axis=[1,2,3])
+    union = K.sum(y_true,[1,2,3])+K.sum(y_pred,[1,2,3])-intersection
+    iou = K.mean((intersection) / (union), axis=0)
+    return iou
 
 def n_opening(Img, n):
-  for i in range(n):
-    Img = erosion(Img)
-  for i in range(n):
-    Img = dilation(Img)
-  return Img
+    for i in range(n):
+        Img = erosion(Img)
+    for i in range(n):
+        Img = dilation(Img)
+    return Img
 
 def n_closing(Img, n):
-  for i in range(n):
-    Img = dilation(Img)
-  for i in range(n):
-    Img = erosion(Img)
-  return Img
+    for i in range(n):
+        Img = dilation(Img)
+    for i in range(n):
+        Img = erosion(Img)
+    return Img
+
+
+def plot_confusion_matrix(y_true, y_pred, classes,
+                          normalize=True,
+                          title=None,
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if not title:
+        if normalize:
+            title = 'Normalized confusion matrix'
+        else:
+            title = 'Confusion matrix, without normalization'
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    # Only use the labels that appear in the data
+    #classes = classes[unique_labels(y_true, y_pred)]
+    if normalize:
+        cm = 100*cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    
+    
+    fig, ax = plt.subplots()
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.figure.colorbar(im, ax=ax)
+    # We want to show all ticks...
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    fmt = '.1f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    fig.tight_layout()
+    return ax
+
+def remove_small_objects(img, min_size=1200):
+    """Remove all the objects that are smaller than a defined threshold
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image to clean
+    min_size : int, optional
+        Threshold to be used to remove all smaller objects, by default 1200
+
+    Returns
+    -------
+    np.ndarray
+        Cleaned image
+    """
+    img2 = np.copy(img)
+    img2 = np.uint8(img2)
+    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(img2, connectivity=8)
+    # connectedComponentswithStats yields every seperated component with information on each of them, such as size
+    # the following part is just taking out the background which is also considered a component, but most of the time we don't want that.
+    sizes = stats[1:, -1]
+    nb_components = nb_components - 1
+
+    # your answer image
+    # for every component in the image, you keep it only if it's above min_size
+    for i in range(0, nb_components):
+        if sizes[i] < min_size:
+            img2[output == i + 1] = 0
+
+    return img2 

@@ -14,7 +14,7 @@ import os
 flags.DEFINE_string('test_images','./Dataset_CVAT2/JPEGImages/Test/','path to the test images')
 flags.DEFINE_string('test_masks','./Dataset_CVAT2/SegmentationClass/Test','path to the test masks')
 flags.DEFINE_string('results','./results/','path to save the results')
-flags.DEFINE_string('weights','./weights/cp-0100.ckpt','path of the weights to use')
+flags.DEFINE_string('model_path','./weights/cp-0100.ckpt','path of the weights to use')
 
 def main(_argv):
 
@@ -22,7 +22,7 @@ def main(_argv):
 
     images_path = FLAGS.test_images
     masks_path = FLAGS.test_masks
-    weights_path = FLAGS.weights
+    model_path = FLAGS.model_path
     results_path = FLAGS.results
     imgs = utils.load_data(path = images_path, size = None)
 
@@ -38,8 +38,12 @@ def main(_argv):
     Y = Y[:,:,:,0]
     
     # Load the model and the weights
-    model = get_model(output_channels=1, size=img_size)
-    model.load_weights(weights_path)
+    if (model_path[-4:] == 'ckpt'):
+        model = get_model(output_channels=1, size=img_size)
+        model.load_weights(model_path)
+
+    elif (model_path[-2:] == 'h5'):
+        model = tf.keras.models.load_model(model_path)
 
     # Make the prediction
     threshold = 0.5
