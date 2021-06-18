@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=False):
+def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=0):
 
     layer = tf.keras.Sequential()
     layer.add(
@@ -9,8 +9,8 @@ def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=False
     if batchnorm:
         layer.add(tf.keras.layers.BatchNormalization())
 
-    if dropout:
-        layer.add(tf.keras.layers.Dropout(0.3))
+    
+    layer.add(tf.keras.layers.Dropout(dropout))
 
     layer.add(tf.keras.layers.ReLU())
 
@@ -34,12 +34,12 @@ def get_encoder(input_shape=[None,None,3],name="encoder"):
 
     return encoder
 
-def get_decoder(skips):
+def get_decoder(skips,dropout=0):
     up_stack = [
-        upsample(512, 3,dropout=False),  # 4x4 -> 8x8
-        upsample(256, 3,dropout=False),  # 8x8 -> 16x16
-        upsample(128, 3,dropout=False),  # 16x16 -> 32x32
-        upsample(64, 3,dropout=False),   # 32x32 -> 64x64
+        upsample(512, 3,dropout=dropout),  # 4x4 -> 8x8
+        upsample(256, 3,dropout=dropout),  # 8x8 -> 16x16
+        upsample(128, 3,dropout=dropout),  # 16x16 -> 32x32
+        upsample(64, 3,dropout=dropout),   # 32x32 -> 64x64
     ]
     x = skips[-1]
     skips = reversed(skips[:-1])
@@ -49,12 +49,12 @@ def get_decoder(skips):
         x = tf.keras.layers.Concatenate()([x,skip])
     return x
 
-def get_model(output_channels=1,size=224,name="U-Net"):
+def get_model(output_channels=1,size=224,name="U-Net",dropout=0):
     x = inputs = tf.keras.layers.Input(shape=[size,size,3])
 
     skips = get_encoder(input_shape=list(x.shape[1:]))(x)
 
-    x = get_decoder(skips)
+    x = get_decoder(skips, dropout=dropout)
 
     last = tf.keras.layers.Conv2DTranspose(
         output_channels, 3, strides=2,

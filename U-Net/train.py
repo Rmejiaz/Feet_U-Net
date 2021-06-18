@@ -20,6 +20,7 @@ flags.DEFINE_integer('batch_size', 5, 'batch size')
 flags.DEFINE_integer('epochs', 10, 'Epochs')
 flags.DEFINE_integer('save_freq', 5, 'frequency of epochs to save')
 flags.DEFINE_string('save_model', './results/Model.h5', 'path to save the model in (.h5 format is recommended')
+flags.DEFINE_float('dropout',0, 'decoder dropout')
 
 def main(_argv):
 
@@ -33,6 +34,7 @@ def main(_argv):
     Y_val_path = FLAGS.val_masks
     val_split = FLAGS.val_split
     save_model = FLAGS.save_model
+    dropout = FLAGS.dropout
     # Load train dataset
     
     X = utils.load_data(X_path,size=image_size)
@@ -42,8 +44,6 @@ def main(_argv):
 
     # Load test dataset
     try:
-        X_val_path = "./Dataset_Unificado/Test/Processed_Images"
-        Y_val_path = "./Dataset_Unificado/Test/BinaryMasks"
         X_val = utils.load_data(X_val_path,size=image_size)
         Y_val = utils.load_data(Y_val_path, size=image_size)
         Y_val = Y_val[:,:,:,0]
@@ -64,7 +64,7 @@ def main(_argv):
                                                     save_freq = save_freq
                                                     )
 
-    model = get_model(output_channels = classes, size = image_size)
+    model = get_model(output_channels = classes, size = image_size, dropout=dropout)
     model.save_weights(checkpoint_path.format(epoch=0))
     model.compile(
                 optimizer = tf.keras.optimizers.Adam(),
