@@ -22,7 +22,19 @@ The used dataset contains images from 22 different patients. Each patient has be
 
 ![Scores](./U-Net/results/best_TestScores.png)
 
+
+### Additional metrics:
+
+| Segmentation            | Dice               | Jaccard (IoU)      | Specificity        | Sensitivity        | Precision          |
+|-------------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
+| U-Net                   | $$89.33 \pm 6.07$$ | $$81.24 \pm 9.46$$ | $$98.15 \pm 1.83$$ | $$90.65 \pm 6.09$$ | $$88.93 \pm 9.73$$ |
+| U-Net + Post-processing | $$89.96 \pm 5.77$$ | $$82.22 \pm 9.0$$  | $$98.41 \pm 1.56$$ | $$90.53 \pm 6.19$$ | $$90.16 \pm 8.88$$ |
+
+The Post-processing step is explained down below in Predict section.
+
 ### Confusion Matrix
+
+This confusion matrix was built using all the images of the test set.
 
 ![Confusion Matrix](./U-Net/results/cm.png)
 
