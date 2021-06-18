@@ -18,13 +18,8 @@ The used dataset contains images from 22 different patients. Each patient has be
 
 ![Best Training](./U-Net/results/best_history.png)
 
-### Dice and Jaccard scores on the test set:
-
-![Scores](./U-Net/results/best_TestScores.png)
-
-
-### Additional metrics:
-
+### Metrics:
+Different metrics on the test set
 | Segmentation            | Dice         | Jaccard (IoU)   | Specificity   | Sensitivity   | Precision    |
 |-------------------------|--------------|-----------------|---------------|---------------|--------------|
 | U-Net                   | 89.33 ± 6.07 | 81.24 ± 9.46    | 98.15 ± 1.83  | 90.65 ± 6.09  | 88.93 ± 9.73 |
