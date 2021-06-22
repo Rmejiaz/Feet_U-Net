@@ -19,10 +19,10 @@ datagen = ImageDataGenerator(
     featurewise_center=False,
     featurewise_std_normalization=False,
     rotation_range=180,
-    width_shift_range=0.5,
-    height_shift_range=0.5,
-    zoom_range = 0.7,
-    shear_range = 45,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    zoom_range = 0.2,
+    shear_range = 0.2,
     vertical_flip = True,
     horizontal_flip = True
     )
