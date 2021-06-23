@@ -128,8 +128,13 @@ def parse_labelfile(path):
 def display(display_list):
     plt.figure(figsize=(20, 15))
 
-    display_list.append(display_list[0][:,:,0]+display_list[1])
-    title = ['Input Image', 'Predicted Mask','Overlay']
+    if (display_list[0].shape[-1] == 3):
+        mask = np.zeros((display_list[0].shape[0], display_list[0].shape[1], display_list[0].shape[2]))
+        mask[:,:,0] = mask[:,:,1] = mask[:,:,2] = display_list[1][:,:]
+        display_list.append(display_list[0]*mask)
+    else:
+        display_list.append(display_list[0][:,:,:]*display_list[1])
+    title = ['Input Image', 'Predicted Mask','Segmented Image']
 
     for i in range(len(display_list)):
         plt.subplot(1, len(display_list), i+1)
