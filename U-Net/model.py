@@ -1,3 +1,5 @@
+# Add here the FCN model
+
 import tensorflow as tf
 
 def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=0):
