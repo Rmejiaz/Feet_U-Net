@@ -16,7 +16,7 @@ def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=0):
 
     return layer
 
-def get_encoder(input_shape=[None,None,3],name="encoder"): 
+def get_encoder(input_shape=[None,None,3],name="encoder", trainable = True): 
     Input = tf.keras.layers.Input(shape=input_shape)
     base_model = tf.keras.applications.MobileNetV2(input_tensor=Input, include_top=False)
     layer_names = [
@@ -30,7 +30,7 @@ def get_encoder(input_shape=[None,None,3],name="encoder"):
 
     # Create the feature extraction model
     encoder  = tf.keras.Model(inputs=Input, outputs=layers,name=name)
-    encoder.trainable = False
+    encoder.trainable = trainable
 
     return encoder
 
@@ -49,12 +49,12 @@ def get_decoder(skips,dropout=0):
         x = tf.keras.layers.Concatenate()([x,skip])
     return x
 
-def get_model(output_channels=1,size=224,name="U-Net",dropout=0):
+def get_model(output_channels=1,size=224,name="U-Net",dropout=0, trainable = True):
     x = inputs = tf.keras.layers.Input(shape=[size,size,3])
 
     skips = get_encoder(input_shape=list(x.shape[1:]))(x)
 
-    x = get_decoder(skips, dropout=dropout)
+    x = get_decoder(skips, dropout=dropout, trainable = True)
 
     last = tf.keras.layers.Conv2DTranspose(
         output_channels, 3, strides=2,
