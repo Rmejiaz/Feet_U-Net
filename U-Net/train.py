@@ -9,18 +9,19 @@ from tensorflow.keras import backend as K
 import numpy as np
 from utils import DiceSimilarity, jaccard
 
-flags.DEFINE_string('imgs_path','./Dataset_CVAT2/JPEGImages/Train','path to the training images')
-flags.DEFINE_string('masks_path','./Dataset_CVAT2/SegmentationClass/Train','path to the training masks')
-flags.DEFINE_string('val_masks','./Dataset_Unificado/Test/BinaryMasks','path to the validation masks')
-flags.DEFINE_string('val_imgs','./Dataset_Unificado/Test/Processed_Images','path to the validation images')
-flags.DEFINE_float('val_split',0.2,'size of the validation split')
+flags.DEFINE_string('imgs_path','./Dataset_CVAT2/Train/JPEGImages','path to the training images')
+flags.DEFINE_string('masks_path','./Dataset_CVAT2/Train/SegmentationClass','path to the training masks')
+flags.DEFINE_string('val_masks','./Dataset_CVAT2/Test/SegmentationClass','path to the validation masks')
+flags.DEFINE_string('val_imgs','./Dataset_CVAT2/Test/JPEGImages','path to the validation images')
+flags.DEFINE_float('val_split',0,'size of the validation split')
 flags.DEFINE_string('weights','./weights/','path to save the model weights')
 flags.DEFINE_integer('buffer_size', 100, 'buffer')
-flags.DEFINE_integer('batch_size', 5, 'batch size')
-flags.DEFINE_integer('epochs', 10, 'Epochs')
+flags.DEFINE_integer('batch_size', 32, 'batch size')
+flags.DEFINE_integer('epochs', 50, 'Epochs')
 flags.DEFINE_integer('save_freq', 5, 'frequency of epochs to save')
 flags.DEFINE_string('save_model', './results/Model.h5', 'path to save the model in (.h5 format is recommended')
 flags.DEFINE_float('dropout',0, 'decoder dropout')
+flags.DEFINE_boolean('not_tl', True, 'whether or not to train all the parameters')
 
 def main(_argv):
 
@@ -35,6 +36,8 @@ def main(_argv):
     val_split = FLAGS.val_split
     save_model = FLAGS.save_model
     dropout = FLAGS.dropout
+    trainable = FLAGS.not_tl
+
     # Load train dataset
     
     X = utils.load_data(X_path,size=image_size)
@@ -64,7 +67,7 @@ def main(_argv):
                                                     save_freq = save_freq
                                                     )
 
-    model = get_model(output_channels = classes, size = image_size, dropout=dropout)
+    model = get_model(output_channels = classes, size = image_size, dropout=dropout, trainable = trainable)
     model.save_weights(checkpoint_path.format(epoch=0))
     model.compile(
                 optimizer = tf.keras.optimizers.Adam(),

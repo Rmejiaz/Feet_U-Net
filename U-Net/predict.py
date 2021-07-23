@@ -12,7 +12,6 @@ import cv2
 flags.DEFINE_string("image_path", "./Dataset_CVAT2/JPEGImages/Test/177.jpg", "input image path")
 flags.DEFINE_string("mask_path", None, "path to save the predicted mask (recomended file extension: png)")
 flags.DEFINE_string("model_path", "./results/Model.h5", "weights to use or .h5 model")
-flags.DEFINE_string("labels", "./Dataset_CVAT/labelmap.txt", "path to the annotation file")
 flags.DEFINE_bool("show_results", True, "show prediction result")
 flags.DEFINE_bool("clean_prediction", True, "post-process the prediction (remove all the small objects)")
 
