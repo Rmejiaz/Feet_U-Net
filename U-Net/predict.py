@@ -39,7 +39,7 @@ def main(_argv):
         model.load_weights(model_path)
 
     elif (model_path[-2:] == 'h5'):
-        model = tf.keras.models.load_model(model_path)
+        model = tf.keras.models.load_model(model_path, custom_objects = {'dice_coef':utils.dice_coef, 'iou_coef':utils.iou_coef})
 
     # Make the prediction
     threshold = 0.5
