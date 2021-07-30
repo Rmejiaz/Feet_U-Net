@@ -52,9 +52,9 @@ def get_decoder(skips,dropout=0):
 def get_model(output_channels=1,size=224,name="U-Net",dropout=0, trainable = True):
     x = inputs = tf.keras.layers.Input(shape=[size,size,3])
 
-    skips = get_encoder(input_shape=list(x.shape[1:]))(x)
+    skips = get_encoder(input_shape=list(x.shape[1:]), trainable=trainable)(x)
 
-    x = get_decoder(skips, dropout=dropout, trainable = True)
+    x = get_decoder(skips, dropout=dropout)
 
     last = tf.keras.layers.Conv2DTranspose(
         output_channels, 3, strides=2,
