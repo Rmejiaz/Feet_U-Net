@@ -1,69 +1,95 @@
-# Add here the FCN model
+import os
+import numpy as np
+import cv2
+import random
+import datetime
+import io
+import json
+import string
+from tensorflow import keras
 
-import tensorflow as tf
+from keras.models import Model, load_model
+from keras.layers import Input, LSTM, Dense, Conv2D, MaxPooling2D, Reshape, Dropout, BatchNormalization, Activation, Conv2DTranspose, Add
+#from keras.callbacks import EarlyStopping
+#import keras.backend as K
+from keras.optimizers import Adam
 
-def upsample(filters,size,strides=2,padding="same",batchnorm=False,dropout=0):
+from base.base_model import BaseModel
+#from keras.applications.vgg16 import VGG16
+#from keras.preprocessing import image
+#from keras.applications.vgg16 import preprocess_input
+import numpy as np
+from keras.models import model_from_json
+from losses.custom_losses import custom_categorical_crossentropy
 
-    layer = tf.keras.Sequential()
-    layer.add(
-        tf.keras.layers.Conv2DTranspose(filters,size,strides,padding,use_bias = False))
+from encoder import encoder_graph, encoder_graph_vgg16
+from decoder import decoder_graph_8x, decoder_graph_16x, decoder_graph_32x
 
-    if batchnorm:
-        layer.add(tf.keras.layers.BatchNormalization())
 
+class ModelFCN(BaseModel):
     
-    layer.add(tf.keras.layers.Dropout(dropout))
+    def __init__(self, config):
+        """
+        Constructor
+        """
+        super().__init__(config)
+        self.y_size = self.config['image']['image_size']['y_size']
+        self.x_size = self.config['image']['image_size']['x_size']
+        self.num_channels = self.config['image']['image_size']['num_channels']
+        self.num_classes = self.config['network']['num_classes']
+        self.use_pretrained_weights = self.config['train']['weights_initialization']['use_pretrained_weights']
+        self.train_from_scratch = self.config['network']['train_from_scratch']
+        self.graph_path = self.config['network']['graph_path']
+        self.decoder = self.config['network']['decoder']
+        self.model = self.build_model()
 
-    layer.add(tf.keras.layers.ReLU())
+    def build_model(self):
+        
+        model = self.build_graph()        
+#        model.compile(optimizer = self.optimizer, loss = self.loss)
+        model.compile(optimizer = self.optimizer, loss = custom_categorical_crossentropy())
 
-    return layer
+        model.summary()
 
-def get_encoder(input_shape=[None,None,3],name="encoder"): 
-    Input = tf.keras.layers.Input(shape=input_shape)
-    base_model = tf.keras.applications.MobileNetV2(input_tensor=Input, include_top=False)
-    layer_names = [
-    'block_1_expand_relu',   # 64x64
-    'block_3_expand_relu',   # 32x32
-    'block_6_expand_relu',   # 16x16
-    'block_13_expand_relu',  # 8x8
-    'block_16_project',      # 4x4
-    ]
-    layers = [base_model.get_layer(name).output for name in layer_names]
+        return model
+    
+        
+    def build_graph(self):
+        
+        if self.use_pretrained_weights:
+            json_file = open(self.graph_path, 'r')
+            loaded_model_json = json_file.read()
+            json_file.close()
 
-    # Create the feature extraction model
-    encoder  = tf.keras.Model(inputs=Input, outputs=layers,name=name)
-    encoder.trainable = False
+            model = model_from_json(loaded_model_json)
+            
+        else:   
+            #initialize encoder randomly
+            if self.train_from_scratch:
+                input_graph, pool_3, pool_4, encoder_out = encoder_graph(self.y_size, self.x_size, self.num_channels, self.num_classes)
+                
+            #initialize encoder with vgg16 weights
+            else:
+                input_graph, pool_3, pool_4, encoder_out = encoder_graph_vgg16(self.y_size, self.x_size, self.num_channels, self.num_classes)
+                        
+#            print(encoder_out.shape)
 
-    return encoder
+            if self.decoder == 'decoder_8x':
+                decoder_out = decoder_graph_8x(pool_3, pool_4, encoder_out, self.num_classes)
+                
+            elif self.decoder == 'decoder_16x':
+                decoder_out = decoder_graph_16x(pool_4, encoder_out, self.num_classes)
 
-def get_decoder(skips,dropout=0):
-    up_stack = [
-        upsample(512, 3,dropout=dropout),  # 4x4 -> 8x8
-        upsample(256, 3,dropout=dropout),  # 8x8 -> 16x16
-        upsample(128, 3,dropout=dropout),  # 16x16 -> 32x32
-        upsample(64, 3,dropout=dropout),   # 32x32 -> 64x64
-    ]
-    x = skips[-1]
-    skips = reversed(skips[:-1])
+            elif self.decoder == 'decoder_32x':
+                decoder_out = decoder_graph_32x(encoder_out, self.num_classes)
 
-    for up,skip in zip(up_stack,skips):
-        x = up(x)
-        x = tf.keras.layers.Concatenate()([x,skip])
-    return x
+            else:
+                raise Exception("Unknown decoder")
+            
+            model = Model(input_graph, decoder_out)
+            
+        return model
 
-def get_model(output_channels=1,size=224,name="U-Net",dropout=0):
-    x = inputs = tf.keras.layers.Input(shape=[size,size,3])
-
-    skips = get_encoder(input_shape=list(x.shape[1:]))(x)
-
-    x = get_decoder(skips, dropout=dropout)
-
-    last = tf.keras.layers.Conv2DTranspose(
-        output_channels, 3, strides=2,
-        padding='same',activation=tf.keras.activations.sigmoid)  #64x64 -> 128x128
-
-    x = last(x)
-    return tf.keras.Model(inputs=inputs, outputs=x,name=name)
 
 if __name__ == '__main__':
     model = get_model(output_channels=2)
