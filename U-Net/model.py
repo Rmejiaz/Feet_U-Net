@@ -69,3 +69,4 @@ def get_model(output_channels = 1, size = 224, name = "FCN", dropout = 0):
 if __name__ == '__main__':
     model = get_model(output_channels=1)
     model.summary()
+    tf.keras.utils.plot_model(model,to_file='data/model.png',show_shapes=False,show_layer_names=False)
