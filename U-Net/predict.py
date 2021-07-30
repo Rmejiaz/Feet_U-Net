@@ -9,7 +9,7 @@ import utils
 import numpy as np
 import cv2
 
-flags.DEFINE_string("image_path", "./Dataset_CVAT2/JPEGImages/Test/177.jpg", "input image path")
+flags.DEFINE_string("image_path", "./Dataset_CVAT2/Test/JPEGImages/177.jpg", "input image path")
 flags.DEFINE_string("mask_path", None, "path to save the predicted mask (recomended file extension: png)")
 flags.DEFINE_string("model_path", "./results/Model.h5", "weights to use or .h5 model")
 flags.DEFINE_string("labels", "./Dataset_CVAT/labelmap.txt", "path to the annotation file")
@@ -40,7 +40,7 @@ def main(_argv):
         model.load_weights(model_path)
 
     elif (model_path[-2:] == 'h5'):
-        model = tf.keras.models.load_model(model_path)
+        model = tf.keras.models.load_model(model_path, custom_objects = {'dice_coef':utils.dice_coef, 'iou_coef':utils.iou_coef})
 
     # Make the prediction
     threshold = 0.5
