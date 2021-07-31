@@ -30,7 +30,7 @@ def get_encoder(input_shape=[None,None,3],name="encoder", trainable = True):
 
     # Create the feature extraction model
     encoder  = tf.keras.Model(inputs=Input, outputs=layers,name=name)
-    encoder.trainable = trainable
+    encoder.trainable = False
 
     return encoder
 
