@@ -335,3 +335,58 @@ def remove_small_objects(img, min_size=1200):
             img2[output == i + 1] = 0
 
     return img2 
+
+
+def sensitivity(cm):
+    TP = cm[1,1]
+    FN = cm[1,0]
+    return TP/(TP+FN)
+
+def specificity(cm):
+    TN = cm[0,0]
+    FP = cm[0,1]
+    return TN/(TN+FP)
+
+def precision(cm):
+    TP = cm[1,1]
+    FP = cm[0,1]
+    return TP/(TP+FP)
+
+def mask_sensitivy(Y, Y_pred):
+    """Calculate the sensitivity of a given predicted mask
+
+    Parameters
+    ----------
+    Y : np.array
+        Ground truth
+    Y_pred : np.array
+        Predicted mask
+    """ 
+    cm = confusion_matrix(Y.reshape(-1), Y_pred.reshape(-1))
+    return sensitivity(cm)
+
+def mask_specificity(Y, Y_pred):
+    """Calculate the specificity of a given predicted mask
+
+    Parameters
+    ----------
+    Y : np.array
+        Ground truth
+    Y_pred : np.array
+        Predicted mask
+    """ 
+    cm = confusion_matrix(Y.reshape(-1), Y_pred.reshape(-1))
+    return specificity(cm)
+
+def mask_precision(Y, Y_pred):
+    """Calculate the precision of a given predicted mask
+
+    Parameters
+    ----------
+    Y : np.array
+        Ground truth
+    Y_pred : np.array
+        Predicted mask
+    """ 
+    cm = confusion_matrix(Y.reshape(-1), Y_pred.reshape(-1))
+    return precision(cm)

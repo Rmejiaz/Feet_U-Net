@@ -7,13 +7,6 @@ import os
 
 def get_model(output_channels = 1, size = 224, name = "FCN", dropout = 0):
 
-    if output_channels == 1:
-        loss = 'binary_crossentropy'
-        final_act = 'sigmoid'
-    elif output_channels > 1:
-        loss = 'categorical_crossentropy'
-        final_act = 'softmax'
-
     b = 4
     i = Input(shape= (size, size, 3))
     ## Block 1
@@ -60,7 +53,7 @@ def get_model(output_channels = 1, size = 224, name = "FCN", dropout = 0):
     u4 = Conv2DTranspose(output_channels, kernel_size=(2, 2), strides=(2, 2), padding='same')(u2_skip)
     u4_skip = Add()([pool3_n, u4])
 
-    o = Conv2DTranspose(output_channels, kernel_size=(8, 8), strides=(8, 8), padding='same', activation=final_act)(u4_skip)
+    o = Conv2DTranspose(output_channels, kernel_size=(8, 8), strides=(8, 8), padding='same', activation='sigmoid')(u4_skip)
 
     model = Model(inputs=i, outputs=o, name=name)
     
