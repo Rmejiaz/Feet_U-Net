@@ -17,7 +17,7 @@ flags.DEFINE_string('test_images','./Dataset_CVAT2/Test/JPEGImages/','path to th
 flags.DEFINE_string('test_masks','./Dataset_CVAT2/Test/SegmentationClass','path to the test masks')
 flags.DEFINE_string('results_path', './results', 'path to save the results')
 flags.DEFINE_string('model_path','./results/Model.h5','path of the weights to use')
-flags.DEFINE_string('model_name', 'U-Net Mobilenetv2', 'name of the model used to train')
+flags.DEFINE_string('model_name', 'U-Net', 'name of the model used to train')
 
 def main(_argv):
 

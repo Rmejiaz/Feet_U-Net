@@ -27,7 +27,7 @@ def main(_argv):
 
     # Initialize variables
     checkpoint_path = FLAGS.weights+'cp-{epoch:04d}.ckpt'
-    image_size = 224
+    image_size = 128
     classes = 1
     X_path = FLAGS.imgs_path
     Y_path = FLAGS.masks_path
@@ -69,7 +69,7 @@ def main(_argv):
     model = get_model(output_channels = classes, size = image_size, dropout=dropout, trainable = trainable)
     model.save_weights(checkpoint_path.format(epoch=0))
     model.compile(
-                optimizer = tf.keras.optimizers.Adam(),
+                optimizer = tf.keras.optimizers.RMSprop(),
                 metrics = [utils.dice_coef, utils.iou_coef],
                 loss = tf.keras.losses.BinaryCrossentropy()
                 )
@@ -124,3 +124,6 @@ def main(_argv):
 
 if __name__ == '__main__':
     app.run(main)
+
+    
+
