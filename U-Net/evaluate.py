@@ -21,7 +21,7 @@ flags.DEFINE_string('model_name', 'U-Net', 'name of the model used to train')
 
 def main(_argv):
 
-    img_size = 224
+    img_size = 128
 
     images_path = FLAGS.test_images
     masks_path = FLAGS.test_masks
