@@ -38,7 +38,7 @@ def main(_argv):
 
     X = np.array(X)
 
-    Y = utils.load_data(path = masks_path, size = img_size)
+    Y = utils.load_data(path = masks_path, size = None)
     Y = Y[:,:,:,0]
     
     # Load the model and the weights
@@ -59,6 +59,12 @@ def main(_argv):
     
     # Compute scores
 
+    # Resize Predictions
+
+    Y_pred = np.array([cv2.resize(Y_pred[i,:,:,0], (Y.shape[2],Y.shape[1]), interpolation = cv2.INTER_NEAREST) for i in range(Y_pred.shape[0])]) # Resize the prediction to have the same dimensions as the input
+
+
+
     # without refinement
 
     sens, specs, precs, dices, jaccards = [], [], [], [], []
@@ -76,7 +82,7 @@ def main(_argv):
 
     sens2, specs2, precs2, dices2, jaccards2 = [], [], [], [], []
 
-    Y_pred_transformed = np.array([utils.remove_small_objects(Y_pred[i,:,:,0]) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
+    Y_pred_transformed = np.array([utils.remove_small_objects(Y_pred[i]) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
 
     for i in range(Y.shape[0]):
         sens2.append(utils.mask_sensitivy(Y[i],Y_pred_transformed[i]))

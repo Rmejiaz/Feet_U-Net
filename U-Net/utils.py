@@ -303,7 +303,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
     fig.tight_layout()
     return ax
 
-def remove_small_objects(img, min_size=1200):
+def remove_small_objects(img, min_size=7500):
     """Remove all the objects that are smaller than a defined threshold
     Parameters
     ----------

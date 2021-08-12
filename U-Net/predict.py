@@ -9,7 +9,7 @@ import utils
 import numpy as np
 import cv2
 
-flags.DEFINE_string("image_path", "./Dataset_CVAT2/JPEGImages/Test/177.jpg", "input image path")
+flags.DEFINE_string("image_path", "./Dataset_CVAT2/Test/JPEGImages/177.jpg", "input image path")
 flags.DEFINE_string("mask_path", None, "path to save the predicted mask (recomended file extension: png)")
 flags.DEFINE_string("model_path", "./results/Model.h5", "weights to use or .h5 model")
 flags.DEFINE_bool("show_results", True, "show prediction result")
@@ -23,7 +23,7 @@ def main(_argv):
     show_results = FLAGS.show_results
     clean_prediction = FLAGS.clean_prediction
     model_path = FLAGS.model_path
-    img_size = 224
+    img_size = 128
 
     # Read the image
     img = plt.imread(img_path)/255.
@@ -47,10 +47,11 @@ def main(_argv):
     Y = Y/Y.max()
     Y = np.where(Y>=threshold,1,0)
 
-    if clean_prediction:
-        Y = utils.remove_small_objects(Y[0,:,:,0])
 
-    Y = cv2.resize(Y, (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
+    Y = cv2.resize(Y[0,:,:,0], (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
+
+    if clean_prediction:
+        Y = utils.remove_small_objects(Y)
 
     if show_results:
         utils.display([img,Y])
