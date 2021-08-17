@@ -29,7 +29,7 @@ def main(_argv):
     model_name = FLAGS.model_name
     results_path = FLAGS.results_path
 
-
+    img_size = 224
     # Load the model and the weights
     if (model_path[-4:] == 'ckpt'):
         model = get_model(output_channels=1, size=img_size)
@@ -40,6 +40,7 @@ def main(_argv):
 
 
     img_size = model.input_shape[1]
+
     # resize the images
     X = []
     for i in range(imgs.shape[0]):
@@ -63,6 +64,10 @@ def main(_argv):
     
     # Compute scores
 
+    # Resize Predictions
+
+    Y_pred = np.array([cv2.resize(Y_pred[i,:,:,0], (Y.shape[2],Y.shape[1]), interpolation = cv2.INTER_NEAREST) for i in range(Y_pred.shape[0])]) # Resize the prediction to have the same dimensions as the input
+
     # without refinement
 
     sens, specs, precs, dices, jaccards = [], [], [], [], []
@@ -80,7 +85,7 @@ def main(_argv):
 
     sens2, specs2, precs2, dices2, jaccards2 = [], [], [], [], []
 
-    Y_pred_transformed = np.array([utils.remove_small_objects(Y_pred[i,:,:,0]) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
+    Y_pred_transformed = np.array([utils.remove_small_objects(Y_pred[i]) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
 
     for i in range(Y.shape[0]):
         sens2.append(utils.mask_sensitivy(Y[i],Y_pred_transformed[i]))

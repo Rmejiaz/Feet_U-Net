@@ -47,10 +47,10 @@ def main(_argv):
     Y = Y/Y.max()
     Y = np.where(Y>=threshold,1,0)
 
-    if clean_prediction:
-        Y = utils.remove_small_objects(Y[0,:,:,0])
+    Y = cv2.resize(Y[0,:,:,0], (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
 
-    Y = cv2.resize(Y, (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
+    if clean_prediction:
+        Y = utils.remove_small_objects(Y)
 
     if show_results:
         utils.display([img,Y])
