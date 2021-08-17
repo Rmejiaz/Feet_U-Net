@@ -21,7 +21,6 @@ flags.DEFINE_string('model_name', 'U-Net Mobilenetv2', 'name of the model used t
 
 def main(_argv):
 
-    img_size = 224
 
     images_path = FLAGS.test_images
     masks_path = FLAGS.test_masks
@@ -30,6 +29,17 @@ def main(_argv):
     model_name = FLAGS.model_name
     results_path = FLAGS.results_path
 
+
+    # Load the model and the weights
+    if (model_path[-4:] == 'ckpt'):
+        model = get_model(output_channels=1, size=img_size)
+        model.load_weights(model_path)
+
+    elif (model_path[-2:] == 'h5'):
+        model = tf.keras.models.load_model(model_path, custom_objects = {'dice_coef':utils.dice_coef, 'iou_coef':utils.iou_coef})
+
+
+    img_size = model.input_shape[1]
     # resize the images
     X = []
     for i in range(imgs.shape[0]):
@@ -38,16 +48,10 @@ def main(_argv):
 
     X = np.array(X)
 
-    Y = utils.load_data(path = masks_path, size = 224)
+    Y = utils.load_data(path = masks_path, size = img_size)
     Y = Y[:,:,:,0]
     
-    # Load the model and the weights
-    if (model_path[-4:] == 'ckpt'):
-        model = get_model(output_channels=1, size=img_size)
-        model.load_weights(model_path)
-
-    elif (model_path[-2:] == 'h5'):
-        model = tf.keras.models.load_model(model_path, custom_objects = {'dice_coef':utils.dice_coef, 'iou_coef':utils.iou_coef})
+    
 
     # Make the prediction
     threshold = 0.5
