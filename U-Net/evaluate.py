@@ -49,7 +49,7 @@ def main(_argv):
 
     X = np.array(X)
 
-    Y = utils.load_data(path = masks_path, size = img_size)
+    Y = utils.load_data(path = masks_path, size = None)
     Y = Y[:,:,:,0]
     
     
