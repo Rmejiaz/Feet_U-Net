@@ -49,7 +49,6 @@ def main(argv_):
     except:
        pass
   
-    copy2(labels_path,results_path)
     
     f=1
     if not(len(os.listdir(ImgDir)) == 1 and os.listdir(ImgDir)[0].find('.') == -1):
