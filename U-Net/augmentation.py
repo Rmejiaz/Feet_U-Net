@@ -11,7 +11,6 @@ from absl.flags import FLAGS
 flags.DEFINE_string('img_path', './Dataset_Unificado/Train/Processed_Images', 'path for input images')
 flags.DEFINE_string('masks_path', './Dataset_Unificado/Train/BinaryMasks', 'path for label images')
 flags.DEFINE_string('augmented_path', None, 'path for augmented dataset')
-flags.DEFINE_string('labels','./Dataset_Unificado/binary_labelmap.txt','path for the labels description')
 flags.DEFINE_integer('n_images',192,'number of images to generate')
 
 # Data generator:
@@ -34,7 +33,6 @@ def main(argv_):
     ImgDir = FLAGS.img_path
     MasksDir = FLAGS.masks_path
     results_path = FLAGS.augmented_path
-    labels_path = FLAGS.labels
     n_images = FLAGS.n_images
 
     if not FLAGS.augmented_path:
