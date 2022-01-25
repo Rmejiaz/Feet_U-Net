@@ -75,7 +75,8 @@ def main(_argv):
                 )
 
     # Train the model
-    
+    class_weights = tf.constant([1, 7])
+    sample_weights = tf.gather(class_weights, indices=tf.cast(Y, tf.int32))
     if val_split == 0:
         model_history = model.fit(
                                 x = X,
@@ -83,7 +84,8 @@ def main(_argv):
                                 validation_data = (X_val,Y_val),
                                 epochs =FLAGS.epochs,
                                 batch_size = FLAGS.batch_size,
-                                callbacks = [cp_callback]
+                                callbacks = [cp_callback],
+                                sample_weights = sample_weights
                                 )
     else:
         model_history = model.fit(
@@ -92,7 +94,8 @@ def main(_argv):
                                 validation_split = val_split,
                                 epochs =FLAGS.epochs,
                                 batch_size = FLAGS.batch_size,
-                                callbacks = [cp_callback]
+                                callbacks = [cp_callback],
+                                sample_weights = sample_weights
                                 )
     # Create the results directory
     if  not 'results' in os.listdir():
