@@ -5,7 +5,7 @@ import tensorflow as tf
 import os
 
 
-def get_model(output_channels = 1, size = 224, name = "FCN", dropout = 0):
+def get_model(output_channels = 1, size = 224, name = "FCN", dropout = 0, trainable=None):
 
     b = 4
     i = Input(shape= (size, size, 3))

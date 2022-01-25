@@ -13,8 +13,9 @@ MODELS = {'mobilenetv2': get_MobileNetV2,
           'vgg16':get_VGG16}
 
 def print_avalible_models():
+    print('Availaible models: ')
     for model in MODELS.keys():
-        print(f'Model: {model}')
+        print(f'\t{model}')
 
 
 def get_model(model='mobilenetv2', **kwargs):
@@ -24,11 +25,11 @@ def get_model(model='mobilenetv2', **kwargs):
         return model_keras
     except KeyError: 
         print(f'Model {model} is not avalaible')
-        print(f"posible models {', '.join(MODELS.keys())}")
+        print(f"Posible models: {', '.join(MODELS.keys())}")
         exit()
     
 if __name__ == '__main__':
     print_avalible_models()
     model = get_model(output_channels=2)
     model.summary()
-    tf.keras.utils.plot_model(model,to_file='model.png',show_shapes=False,show_layer_names=False)
+    tf.keras.utils.plot_model(model,to_file='./data/model.png',show_shapes=False,show_layer_names=False)
