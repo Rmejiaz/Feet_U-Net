@@ -12,7 +12,7 @@ MODELS = {'mobilenetv2': get_MobileNetV2,
           'unet':get_UNET,
           'vgg16':get_VGG16}
 
-def print_avalible_models():
+def print_available_models():
     print('Availaible models: ')
     for model in MODELS.keys():
         print(f'\t{model}')
@@ -29,7 +29,7 @@ def get_model(model='mobilenetv2', **kwargs):
         exit()
     
 if __name__ == '__main__':
-    print_avalible_models()
+    print_available_models()
     model = get_model(output_channels=2)
     model.summary()
-    tf.keras.utils.plot_model(model,to_file='./data/model.png',show_shapes=False,show_layer_names=False)
+    tf.keras.utils.plot_model(model,to_file='./model.png',show_shapes=False,show_layer_names=False)
