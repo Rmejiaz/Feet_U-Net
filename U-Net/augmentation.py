@@ -13,18 +13,16 @@ flags.DEFINE_string('masks_path', './Dataset_Unificado/Train/BinaryMasks', 'path
 flags.DEFINE_string('augmented_path', None, 'path for augmented dataset')
 flags.DEFINE_integer('n_images',192,'number of images to generate')
 
-# Data generator:
-datagen = ImageDataGenerator(
-    featurewise_center=False,
-    featurewise_std_normalization=False,
-    rotation_range=180,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    zoom_range = 0.2,
-    shear_range = 0.2,
-    vertical_flip = True,
-    horizontal_flip = True
-    )
+flags.DEFINE_boolean('featurewise_center', False, 'featurewise_center' )
+flags.DEFINE_boolean('featurewise_std_normalization', False, 'featurewise_std_normalization' )
+flags.DEFINE_integer('rotation_range',30,'Rotation Range')
+flags.DEFINE_float('width_shift_range',0.2, 'width_shift_range')
+flags.DEFINE_float('height_shift_range',0.2, 'height_shift_range')
+flags.DEFINE_float('zoom_range',0.2, 'zoom_range')
+flags.DEFINE_float('shear_range',0.2, 'shear_range')
+flags.DEFINE_boolean('horizontal_flip', True, 'horizontal_flip' )
+
+
 
 def main(argv_):
 
@@ -81,7 +79,20 @@ def main(argv_):
     
     image_size = plt.imread(MasksDir_2+'/'+os.listdir(MasksDir_2)[0]+'/'+next(os.walk(MasksDir_2+'/'+os.listdir(MasksDir_2)[0]))[2][0]).shape[:2]
 
-    seed = np.random.randint(100)
+    
+    # Data generator:
+    datagen = ImageDataGenerator(
+        featurewise_center= FLAGS.featurewise_center,
+        featurewise_std_normalization= FLAGS.featurewise_std_normalization,
+        rotation_range= FLAGS.rotation_range,
+        width_shift_range= FLAGS.width_shift_range,
+        height_shift_range= FLAGS.height_shift_range,
+        zoom_range = FLAGS.zoom_range,
+        shear_range = FLAGS.shear_range,
+        horizontal_flip = FLAGS.horizontal_flip
+        )
+
+    seed = 42
     image_generator = datagen.flow_from_directory(directory=ImgDir_2,target_size=image_size,save_to_dir=results_path+'/Images',
                                                   class_mode=None,save_format='jpg',seed = seed)
 
