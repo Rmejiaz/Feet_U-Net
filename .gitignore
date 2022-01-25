@@ -12,4 +12,4 @@
 */Dataset_CVAT2
 *.h5
 *.ckpt
-./env
+.env
