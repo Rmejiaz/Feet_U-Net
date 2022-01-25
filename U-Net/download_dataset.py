@@ -3,6 +3,7 @@ from absl import flags, app, logging
 from absl.flags import FLAGS
 
 flags.DEFINE_string('path',None,'relative path to download the dataset')
+flags.DEFINE_string('id',"1BfuvmCI_LjSpfT05UMnWXPBXBrEwo73E",'ID google Drive dataset')
 
 
 def download_dataset(ID="1BfuvmCI_LjSpfT05UMnWXPBXBrEwo73E"):
@@ -25,7 +26,7 @@ def main(_argv):
     if path:
         os.chdir(path)
 
-    download_dataset()  
+    download_dataset(FLAGS.id)  
 
 if __name__ == '__main__':
     app.run(main) 
