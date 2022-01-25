@@ -85,7 +85,7 @@ def main(_argv):
                                 epochs =FLAGS.epochs,
                                 batch_size = FLAGS.batch_size,
                                 callbacks = [cp_callback],
-                                sample_weights = sample_weights
+                                sample_weight = sample_weights
                                 )
     else:
         model_history = model.fit(
@@ -95,7 +95,7 @@ def main(_argv):
                                 epochs =FLAGS.epochs,
                                 batch_size = FLAGS.batch_size,
                                 callbacks = [cp_callback],
-                                sample_weights = sample_weights
+                                sample_weight = sample_weights
                                 )
     # Create the results directory
     if  not 'results' in os.listdir():
