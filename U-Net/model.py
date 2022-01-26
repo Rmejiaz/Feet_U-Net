@@ -27,7 +27,7 @@ def get_model(model='mobilenetv2', **kwargs):
         print(f'Model {model} is not avalaible')
         print(f"Posible models: {', '.join(MODELS.keys())}")
         exit()
-    
+
 if __name__ == '__main__':
     print_available_models()
     model = get_model(output_channels=2)

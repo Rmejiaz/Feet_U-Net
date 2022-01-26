@@ -8,11 +8,10 @@ from absl import app, flags, logging
 from absl.flags import FLAGS
 
 
-flags.DEFINE_string('img_path', './Dataset_Unificado/Train/Processed_Images', 'path for input images')
-flags.DEFINE_string('masks_path', './Dataset_Unificado/Train/BinaryMasks', 'path for label images')
+flags.DEFINE_string('img_path', './Dataset_3/Train/JPEGImages', 'path for input images')
+flags.DEFINE_string('masks_path', './Dataset_3/Train/SegmentationClass', 'path for label images')
 flags.DEFINE_string('augmented_path', None, 'path for augmented dataset')
 flags.DEFINE_integer('n_images',192,'number of images to generate')
-
 flags.DEFINE_boolean('featurewise_center', False, 'featurewise_center' )
 flags.DEFINE_boolean('featurewise_std_normalization', False, 'featurewise_std_normalization' )
 flags.DEFINE_integer('rotation_range',30,'Rotation Range')
@@ -21,6 +20,7 @@ flags.DEFINE_float('height_shift_range',0.2, 'height_shift_range')
 flags.DEFINE_float('zoom_range',0.2, 'zoom_range')
 flags.DEFINE_float('shear_range',0.2, 'shear_range')
 flags.DEFINE_boolean('horizontal_flip', True, 'horizontal_flip' )
+
 
 
 
@@ -42,8 +42,8 @@ def main(argv_):
         
 
     try:
-        os.mkdir(results_path+'/Images')
-        os.mkdir(results_path+'/Masks')
+        os.mkdir(results_path+'/JPEGImages')
+        os.mkdir(results_path+'/SegmentationClass',)
     except:
        pass
   
@@ -52,13 +52,13 @@ def main(argv_):
     if not(len(os.listdir(ImgDir)) == 1 and os.listdir(ImgDir)[0].find('.') == -1):
         while f:
             try:
-                os.mkdir(ImgDir+'/../Images'+str(f))
+                os.mkdir(ImgDir+'/../JPEGImages'+str(f))
                 j=f
                 f=0
             except:
                 f+=1
-        ImgDir_2 = ImgDir[:ImgDir.rfind('/')]+'/Images'+str(j)
-        move(ImgDir,ImgDir+'/../Images'+str(j))
+        ImgDir_2 = ImgDir[:ImgDir.rfind('/')]+'/JPEGImages'+str(j)
+        move(ImgDir,ImgDir+'/../JPEGImages'+str(j))
     else:
         ImgDir_2 = ImgDir  
 
@@ -66,13 +66,13 @@ def main(argv_):
     if not(len(os.listdir(MasksDir)) == 1 and os.listdir(MasksDir)[0].find('.') == -1):
         while f:
             try:
-                os.mkdir(MasksDir+'/../Masks'+str(f))
+                os.mkdir(MasksDir+'/../SegmentationClass'+str(f))
                 j=f
                 f=0
             except:
                 f+=1
-        MasksDir_2 = MasksDir[:MasksDir.rfind('/')]+'/Masks'+str(j)
-        move(MasksDir,MasksDir+'/../Masks'+str(j))
+        MasksDir_2 = MasksDir[:MasksDir.rfind('/')]+'/SegmentationClass'+str(j)
+        move(MasksDir,MasksDir+'/../SegmentationClass'+str(j))
     else:
         MasksDir_2 = MasksDir
 
@@ -93,10 +93,11 @@ def main(argv_):
         )
 
     seed = 42
-    image_generator = datagen.flow_from_directory(directory=ImgDir_2,target_size=image_size,save_to_dir=results_path+'/Images',
+  
+    image_generator = datagen.flow_from_directory(directory=ImgDir_2,target_size=image_size,save_to_dir=results_path+'/JPEGImages',
                                                   class_mode=None,save_format='jpg',seed = seed)
 
-    masks_generator = datagen.flow_from_directory(directory=MasksDir_2,target_size=image_size,save_to_dir=results_path+'/Masks',
+    masks_generator = datagen.flow_from_directory(directory=MasksDir_2,target_size=image_size,save_to_dir=results_path+'/SegmentationClass',
                                                   class_mode=None,save_format='png',seed = seed)
 
 
@@ -122,8 +123,8 @@ def main(argv_):
 
     origin_imgs = ImgDir
     origin_masks = MasksDir
-    dst_imgs = os.path.join(results_path,'Images')
-    dst_masks = os.path.join(results_path, 'Masks')
+    dst_imgs = os.path.join(results_path,'JPEGImages')
+    dst_masks = os.path.join(results_path, 'SegmentationClass')
 
     for file in os.listdir(origin_imgs):
         copy2(os.path.join(origin_imgs,file), os.path.join(dst_imgs, file))

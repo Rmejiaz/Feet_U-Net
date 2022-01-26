@@ -13,3 +13,5 @@
 *.h5
 *.ckpt
 .env
+*/Dataset_3
+

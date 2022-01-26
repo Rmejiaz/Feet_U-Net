@@ -29,8 +29,8 @@ def main(_argv):
     try:
         h5_model = tf.keras.models.load_model(path = h5_path, custom_objects={'dice_coef':utils.dice_coef, 'iou_coef':utils.iou_coef})
     except:
-        print(f"Cannot open {path}")
-        break
+        print(f"Cannot open {h5_path}")
+        return
     
     if (tflite_path == None):
         tflite_path = h5_path[:-2] + "tflite"
