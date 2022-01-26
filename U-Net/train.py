@@ -1,12 +1,14 @@
 from absl import app, flags, logging
 from absl.flags import FLAGS
+from matplotlib.style import available
 import tensorflow as tf
-from model import get_model
+from model import get_model, MODELS
 import matplotlib.pyplot as plt
 import utils
 import os 
 from tensorflow.keras import backend as K
 import numpy as np
+
 from utils import DiceSimilarity, jaccard
 
 flags.DEFINE_string('imgs_path','./Dataset_CVAT2/Train/JPEGImages','path to the training images')
@@ -22,6 +24,9 @@ flags.DEFINE_integer('save_freq', 5, 'frequency of epochs to save')
 flags.DEFINE_string('save_model', './results/Model.h5', 'path to save the model in (.h5 format is recommended')
 flags.DEFINE_float('dropout',0, 'decoder dropout')
 flags.DEFINE_boolean('no_tl', True, 'whether or not to train all the parameters' )
+
+available_models = list(MODELS.keys())
+flags.DEFINE_enum('model',available_models[0],available_models,'Models Availables')
 
 def main(_argv):
 
@@ -66,7 +71,7 @@ def main(_argv):
                                                     save_freq = save_freq
                                                     )
 
-    model = get_model(output_channels = classes, size = image_size, dropout=dropout, trainable = trainable)
+    model = get_model(model=FLAGS.model,output_channels = classes, size = image_size, dropout=dropout, trainable = trainable)
     model.save_weights(checkpoint_path.format(epoch=0))
     model.compile(
                 optimizer = tf.keras.optimizers.Adam(),
@@ -75,8 +80,9 @@ def main(_argv):
                 )
 
     # Train the model
-    class_weights = tf.constant([1, 7])
+    class_weights = tf.constant([1,7])
     sample_weights = tf.gather(class_weights, indices=tf.cast(Y, tf.int32))
+
     if val_split == 0:
         model_history = model.fit(
                                 x = X,
@@ -87,6 +93,7 @@ def main(_argv):
                                 callbacks = [cp_callback],
                                 sample_weight = sample_weights
                                 )
+    
     else:
         model_history = model.fit(
                                 x = X,
@@ -97,6 +104,7 @@ def main(_argv):
                                 callbacks = [cp_callback],
                                 sample_weight = sample_weights
                                 )
+        
     # Create the results directory
     if  not 'results' in os.listdir():
         os.mkdir('results')
