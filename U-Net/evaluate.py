@@ -13,6 +13,8 @@ import os
 from tabulate import tabulate
 from datetime import date
 
+from functools import partial
+
 flags.DEFINE_string('test_images','./Dataset_CVAT2/Test/JPEGImages/','path to the test images')
 flags.DEFINE_string('test_masks','./Dataset_CVAT2/Test/SegmentationClass','path to the test masks')
 flags.DEFINE_string('results_path', './results', 'path to save the results')
@@ -85,7 +87,13 @@ def main(_argv):
 
     sens2, specs2, precs2, dices2, jaccards2 = [], [], [], [], []
 
-    Y_pred_transformed = np.array([utils.remove_small_objects(Y_pred[i]) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
+
+    steps = [partial(utils.opening,diameter=4),
+            partial(utils.remove_small_objects,connectivity=4),
+            partial(utils.closing,diameter=4),
+         ]   
+
+    Y_pred_transformed = np.array([utils.posprocessing(Y_pred[i],steps) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
 
     for i in range(Y.shape[0]):
         sens2.append(utils.mask_sensitivy(Y[i],Y_pred_transformed[i]))
