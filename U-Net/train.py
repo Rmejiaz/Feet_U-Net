@@ -25,6 +25,8 @@ flags.DEFINE_string('save_model', './results/Model.h5', 'path to save the model 
 flags.DEFINE_float('dropout',0, 'decoder dropout')
 flags.DEFINE_boolean('no_tl', True, 'whether or not to train all the parameters' )
 
+flags.DEFINE_boolean('weighted_classes', False, 'whether or not to train all the parameters' )
+
 available_models = list(MODELS.keys())
 flags.DEFINE_enum('model',available_models[0],available_models,'Models Availables')
 
@@ -80,8 +82,11 @@ def main(_argv):
                 )
 
     # Train the model
-    class_weights = tf.constant([1,7])
-    sample_weights = tf.gather(class_weights, indices=tf.cast(Y, tf.int32))
+    if FLAGS.weighted_classes: 
+        class_weights = tf.constant([1,7])
+        sample_weights = tf.gather(class_weights, indices=tf.cast(Y, tf.int32))
+    else:
+        sample_weights = None 
 
     if val_split == 0:
         model_history = model.fit(
