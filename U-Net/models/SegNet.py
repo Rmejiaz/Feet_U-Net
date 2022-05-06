@@ -45,11 +45,21 @@ class MaxPoolingWithArgmax2D(Layer):
     def compute_mask(self, inputs, mask=None):
         return 2 * [None]
 
+    def get_config(self):
+      config = super().get_config().copy()
+      return config
+
 
 class MaxUnpooling2D(Layer):
     def __init__(self, size=(2, 2), **kwargs):
         super(MaxUnpooling2D, self).__init__(**kwargs)
         self.size = size
+    
+    def get_config(self):
+      config = super().get_config().copy()
+      return config
+
+
     def call(self, inputs, output_shape=None):
         updates, mask = inputs[0], inputs[1]
         with variable_scope(self.name):
@@ -83,6 +93,8 @@ class MaxUnpooling2D(Layer):
             values = K.reshape(updates, [updates_size])
             ret = K.tf.scatter_nd(indices, values, output_shape)
             return ret
+
+
 
     def compute_output_shape(self, input_shape):
         mask_shape = input_shape[1]
