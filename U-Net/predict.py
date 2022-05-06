@@ -50,10 +50,10 @@ def main(_argv):
     Y = cv2.resize(Y[0,:,:,0], (img.shape[1],img.shape[0]), interpolation = cv2.INTER_NEAREST) # Resize the prediction to have the same dimensions as the input
 
     if clean_prediction:
-        Y = utils.remove_small_objects(Y)
+        Y = utils.posprocessing(Y)
 
     if show_results:
-        utils.display([img,Y])
+        utils.display([img,Y[0,...,0]])
 
     if out_path != None:
         plt.imsave(out_path, Y, cmap='gray')

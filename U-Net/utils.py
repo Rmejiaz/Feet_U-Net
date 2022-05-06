@@ -425,7 +425,7 @@ default_steps = [partial(opening,diameter=4),
          ]   
 
 
-def posprocessing(mask,steps):
+def posprocessing(mask,steps = default_steps):
     mask = np.squeeze(mask)
     for step in steps:
         mask = step(mask)

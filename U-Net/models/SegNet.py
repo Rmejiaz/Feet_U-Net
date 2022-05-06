@@ -93,7 +93,7 @@ class MaxUnpooling2D(Layer):
             mask_shape[3],
         )
 
-def get_model(output_channels=1, size=224,name="SegNet", kernel = 3, ActFunction = 'selu'):
+def get_model(output_channels=1, size=224,name="SegNet", kernel = 3, ActFunction = 'selu',dropout = 0, trainable = True):
     input_shape = (None,size,size,3)
     Input = tf.keras.Input(shape=(size,size,3), name='Input')
     #***********************************************************************Encoder***********************************************************************

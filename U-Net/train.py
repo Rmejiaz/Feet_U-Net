@@ -11,10 +11,10 @@ import numpy as np
 
 from utils import DiceSimilarity, jaccard
 
-flags.DEFINE_string('imgs_path','./Dataset_CVAT2/Train/JPEGImages','path to the training images')
-flags.DEFINE_string('masks_path','./Dataset_CVAT2/Train/SegmentationClass','path to the training masks')
-flags.DEFINE_string('val_masks','./Dataset_CVAT2/Test/SegmentationClass','path to the validation masks')
-flags.DEFINE_string('val_imgs','./Dataset_CVAT2/Test/JPEGImages','path to the validation images')
+flags.DEFINE_string('imgs_path','./Dataset_3/Train/JPEGImages','path to the training images')
+flags.DEFINE_string('masks_path','./Dataset_3/Train/SegmentationClass','path to the training masks')
+flags.DEFINE_string('val_masks','./Dataset_3/Test/SegmentationClass','path to the validation masks')
+flags.DEFINE_string('val_imgs','./Dataset_3/Test/JPEGImages','path to the validation images')
 flags.DEFINE_float('val_split',0,'size of the validation split')
 flags.DEFINE_string('weights','./weights/','path to save the model weights')
 flags.DEFINE_integer('buffer_size', 100, 'buffer')

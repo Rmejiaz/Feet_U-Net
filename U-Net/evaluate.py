@@ -15,8 +15,8 @@ from datetime import date
 
 from functools import partial
 
-flags.DEFINE_string('test_images','./Dataset_CVAT2/Test/JPEGImages/','path to the test images')
-flags.DEFINE_string('test_masks','./Dataset_CVAT2/Test/SegmentationClass','path to the test masks')
+flags.DEFINE_string('test_images','./Dataset_3/Test/JPEGImages/','path to the test images')
+flags.DEFINE_string('test_masks','./Dataset_3/Test/SegmentationClass','path to the test masks')
 flags.DEFINE_string('results_path', './results', 'path to save the results')
 flags.DEFINE_string('model_path','./results/Model.h5','path of the weights to use')
 flags.DEFINE_string('model_name', 'U-Net Mobilenetv2', 'name of the model used to train')
@@ -93,7 +93,16 @@ def main(_argv):
             partial(utils.closing,diameter=4),
          ]   
 
-    Y_pred_transformed = np.array([utils.posprocessing(Y_pred[i],steps) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
+    Y_pred_transformed = []
+    
+    for i in range(Y_pred.shape[0]):
+        image = Y_pred[i].astype('uint8')
+        tran_image = utils.posprocessing(image)
+        Y_pred_transformed.append(tran_image)
+    
+    Y_pred_transformed = np.array(Y_pred_transformed)
+
+    # Y_pred_transformed = np.array([utils.posprocessing(Y_pred[i],steps) for i in range(Y_pred.shape[0])])   # Refine the predictions (remove small objects)
 
     for i in range(Y.shape[0]):
         sens2.append(utils.mask_sensitivy(Y[i],Y_pred_transformed[i]))
