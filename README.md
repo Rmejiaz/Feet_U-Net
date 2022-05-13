@@ -2,7 +2,7 @@
 
 Semantic segmentation of thermal feet images for characterizing epidural anesthesia performance during birth using a modified U-Net neural network.
 
-![Example](./U-Net/results/best_prediction.png)
+![Example](./UNet/results/best_prediction.png)
 
 ## Google Colab demo: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1QGY1psKXsUyWZUVVVOPMfwFSE6_Q3EZA?usp=sharing)
 
@@ -16,7 +16,7 @@ The used dataset contains images from 22 different patients. Each patient has be
 
 ### Training History
 
-![Best Training](./U-Net/results/best_history.png)
+![Best Training](./UNet/results/best_history.png)
 
 ### Metrics:
 Different metrics on the test set
@@ -31,7 +31,7 @@ The Post-processing step is explained down below in the Predict section.
 
 This confusion matrix was built using all the images of the test set.
 
-![Confusion Matrix](./U-Net/results/cm.png)
+![Confusion Matrix](./UNet/results/cm.png)
 
 ## Usage
 
