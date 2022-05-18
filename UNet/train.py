@@ -26,6 +26,7 @@ flags.DEFINE_float('dropout',0, 'decoder dropout')
 flags.DEFINE_boolean('no_tl', True, 'whether or not to train all the parameters' )
 
 flags.DEFINE_boolean('weighted_classes', False, 'whether or not to train all the parameters' )
+flags.DEFINE_int('img_size', 224, 'image size used to resize the images')
 
 available_models = list(MODELS.keys())
 flags.DEFINE_enum('model',available_models[0],available_models,'Models Availables')
@@ -34,7 +35,7 @@ def main(_argv):
 
     # Initialize variables
     checkpoint_path = FLAGS.weights+'cp-{epoch:04d}.ckpt'
-    image_size = 224
+    image_size = int(FLAGS.img_size)
     classes = 1
     X_path = FLAGS.imgs_path
     Y_path = FLAGS.masks_path
