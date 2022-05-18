@@ -81,7 +81,7 @@ def main(_argv):
     
     op = tf.keras.optimizers.Adam() if optimizer == "Adam" else tf.keras.optimizers.RMSprop()
     model.compile(
-                optimizer = tf.keras.optimizers.Adam(),
+                optimizer = op,
                 metrics = [utils.dice_coef, utils.iou_coef],
                 loss = tf.keras.losses.BinaryCrossentropy()
                 )
