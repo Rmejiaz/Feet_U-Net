@@ -26,7 +26,7 @@ flags.DEFINE_float('dropout',0, 'decoder dropout')
 flags.DEFINE_boolean('no_tl', True, 'whether or not to train all the parameters' )
 
 flags.DEFINE_boolean('weighted_classes', False, 'whether or not to train all the parameters' )
-flags.DEFINE_int('img_size', 224, 'image size used to resize the images')
+flags.DEFINE_integer('img_size', 224, 'image size used to resize the images')
 
 available_models = list(MODELS.keys())
 flags.DEFINE_enum('model',available_models[0],available_models,'Models Availables')
