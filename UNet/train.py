@@ -27,6 +27,7 @@ flags.DEFINE_boolean('no_tl', True, 'whether or not to train all the parameters'
 
 flags.DEFINE_boolean('weighted_classes', False, 'whether or not to train all the parameters' )
 flags.DEFINE_integer('img_size', 224, 'image size used to resize the images')
+flags.DEFINE_string('optimizer','Adam','path to save the model weights')
 
 available_models = list(MODELS.keys())
 flags.DEFINE_enum('model',available_models[0],available_models,'Models Availables')
@@ -45,6 +46,7 @@ def main(_argv):
     save_model = FLAGS.save_model
     dropout = FLAGS.dropout
     trainable = FLAGS.no_tl
+    optimizer = FLAGS.optimizer 
     # Load train dataset
     
     X = utils.load_data(X_path,size=image_size)
@@ -76,6 +78,8 @@ def main(_argv):
 
     model = get_model(model=FLAGS.model,output_channels = classes, size = image_size, dropout=dropout, trainable = trainable)
     model.save_weights(checkpoint_path.format(epoch=0))
+    
+    op = tf.keras.optimizers.Adam() if optimizer == "Adam" else tf.keras.optimizers.RMSprop()
     model.compile(
                 optimizer = tf.keras.optimizers.Adam(),
                 metrics = [utils.dice_coef, utils.iou_coef],
